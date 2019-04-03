@@ -24,8 +24,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.location.Address;
-import android.location.Geocoder;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,23 +50,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
-//import com.google.android.gms.location.places.GeoDataClient;
-//import com.google.android.gms.location.places.Place;
-//import com.google.android.gms.location.places.PlaceBuffer;
-//import com.google.android.gms.location.places.PlaceDetectionClient;
-//import com.google.android.gms.location.places.Places;
-//import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements
         ConnectionCallbacks,
@@ -86,8 +76,6 @@ public class MainActivity extends AppCompatActivity implements
     private boolean mGeofencesEnabled;  // true if geofences enabled, false if geofences enabled switch is off
     private GoogleApiClient mClient;
     private Geofencing mGeofencing;
-    private GoogleMap mMap;
-    private boolean mapReady;
     private PlacesClient mPlacesClient;
 
     /**
@@ -103,13 +91,13 @@ public class MainActivity extends AppCompatActivity implements
         createNotificationChannel();
 
         // Set up the recycler view
-        mRecyclerView = (RecyclerView) findViewById(R.id.places_list_recycler_view);
+        mRecyclerView = findViewById(R.id.places_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, null);
         mRecyclerView.setAdapter(mAdapter);
 
         // Initialize the switch state and Handle enable/disable switch change
-        Switch onOffSwitch = (Switch) findViewById(R.id.enable_switch);
+        Switch onOffSwitch = findViewById(R.id.enable_switch);
         mGeofencesEnabled = getPreferences(MODE_PRIVATE).getBoolean(getString(R.string.setting_enabled), false);
         onOffSwitch.setChecked(mGeofencesEnabled);
         onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
