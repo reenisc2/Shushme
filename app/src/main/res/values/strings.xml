@@ -14,7 +14,7 @@
     <string name="touch_to_relaunch">Touch to launch the app.</string>
     <string name="back_to_normal">Back to normal</string>
     <string name="title_activity_location">Select Location</string>
-    <string name="api_key">Insert API ley here</string>
+    <string name="api_key">Insert API key here</string>
     <string name="radius_hint">Fence radius in meters</string>
     <string name="radius_button">Set radius</string>
     <string name="title_activity_permission">Permissions</string>

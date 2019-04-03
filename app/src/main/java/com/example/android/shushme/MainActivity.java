@@ -19,12 +19,14 @@ package com.example.android.shushme;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -122,10 +124,10 @@ public class MainActivity extends AppCompatActivity implements
                     Log.i(TAG, "Is checked");
                 }
                 else  {
-                    Toast.makeText(MainActivity.this,
-                            getString(R.string.ringer_warning),
-                            Toast.LENGTH_LONG).show();
                     mGeofencing.unRegisterAllGeofences();
+                    Context context = getApplicationContext();
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
                     Log.i(TAG, "Is unchecked");
                 }
             }
