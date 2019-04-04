@@ -1,6 +1,5 @@
 package com.example.android.shushme;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -34,7 +32,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +47,6 @@ public class LocationActivity extends AppCompatActivity
         GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
-    private boolean mapReady = false;
     private LatLng mNewPos = Constants.HOME;
     private static final String TAG = LocationActivity.class.getSimpleName();
     private FusedLocationProviderClient mLocationProvider;
@@ -71,13 +67,16 @@ public class LocationActivity extends AppCompatActivity
         mLocationProvider = LocationServices.getFusedLocationProviderClient(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        try {
+            mapFragment.getMapAsync(this);
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "Map retrieval failed", Toast.LENGTH_LONG).show();
+        }
 
     }
 
     public void onMapReady(GoogleMap map) {
         mMap = map;
-        mapReady = true;
         CameraPosition target = CameraPosition.builder().target(Constants.HOME).zoom(14).build();
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
         mMap.setOnMyLocationButtonClickListener(this);
@@ -125,8 +124,6 @@ public class LocationActivity extends AppCompatActivity
                     }
                 }
             });
-        } else {
-            return;
         }
     }
 

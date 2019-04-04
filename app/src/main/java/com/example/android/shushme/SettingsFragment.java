@@ -3,7 +3,6 @@ package com.example.android.shushme;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
@@ -70,10 +69,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         Preference preference = findPreference(key);
         if (null != preference) {
-            if (key.equals("radius")) {
+            if (key.equals(ShushmePreferences.PREF_RADIUS)) {
                 setPreferenceSummary(preference, Float.parseFloat(
                         sharedPreferences.getString(key, Constants.GEOFENCE_RADIUS_DEFAULT)));
-            } else if (key.equals("updates")) {
+            } else if (key.equals(ShushmePreferences.PREF_NOTIFICATIONS)) {
                 setPreferenceSummary(preference, Integer.parseInt(
                         sharedPreferences.getString(key, Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT)));
             }

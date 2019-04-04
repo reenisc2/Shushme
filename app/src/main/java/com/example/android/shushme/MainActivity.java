@@ -16,6 +16,7 @@ package com.example.android.shushme;
 * limitations under the License.
 */
 
+import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentValues;
@@ -51,7 +52,6 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -113,9 +113,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 else  {
                     mGeofencing.unRegisterAllGeofences();
-                    Context context = getApplicationContext();
-                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                    restoreRinger();
                     Log.i(TAG, "Is unchecked");
                 }
             }
@@ -180,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements
 
         if (data == null || data.getCount() == 0) return;
         Log.i(TAG, "data not null or 0");
-        List<String> guids = new ArrayList<String>();
-        List<Place> places = new ArrayList<Place>();
+        List<String> guids = new ArrayList<>();
+        List<Place> places = new ArrayList<>();
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         while (data.moveToNext()) {
             Log.i(TAG, "In while data.moveToNext");
@@ -202,24 +200,21 @@ public class MainActivity extends AppCompatActivity implements
                     Log.i(TAG, "mGeofencesEnabled, so call register ----------------------------------");
                     mGeofencing.registerAllGeofences();
                 }
-                return;
             }).addOnFailureListener((exception) -> {
                 Log.i(TAG, "addOnFailureListener");
                 if (exception instanceof ApiException) {
-                    ApiException apiException = (ApiException) exception;
-                    int statusCode = apiException.getStatusCode();
                     Log.e(TAG, "Place not found:" + exception.getMessage());
                 }
-                return;
             });
         }
         Log.i(TAG," built guids list, size is: " + guids.size());
+        data.close();
     }
 
     /***
      * Button Click event handler to handle clicking the "Add new location" Button
      *
-     * @param view
+     * @param view  The view that was clicked
      */
     public void onAddPlaceButtonClicked(View view) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -253,9 +248,6 @@ public class MainActivity extends AppCompatActivity implements
                     return;
                 }
 
-                String name = data.getStringExtra("Name");
-                Double lat = data.getDoubleExtra("Lat", Constants.HOME.latitude);
-                Double lng = data.getDoubleExtra("Lng", Constants.HOME.longitude);
                 String placeID = data.getStringExtra("placeId");
                 Log.i(TAG, "Data Not Null!");
 
@@ -263,6 +255,8 @@ public class MainActivity extends AppCompatActivity implements
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeID);
                 getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
+            } else {
+                restoreRinger();
             }
             
             // Get live data information
@@ -286,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.i(TAG, "onResume");
 
         // Initialize location permissions checkbox
-        CheckBox locationPermissions = (CheckBox) findViewById(R.id.location_permission_checkbox);
+        CheckBox locationPermissions = findViewById(R.id.location_permission_checkbox);
         if (ActivityCompat.checkSelfPermission(MainActivity.this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             locationPermissions.setChecked(false);
@@ -296,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // Initialize ringer permissions checkbox
-        CheckBox ringerPermissions = (CheckBox) findViewById(R.id.ringer_permissions_checkbox);
+        CheckBox ringerPermissions = findViewById(R.id.ringer_permissions_checkbox);
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Check if the API supports such permission change and check if permission is granted
         if (android.os.Build.VERSION.SDK_INT >= 23 && !nm.isNotificationPolicyAccessGranted()) {
@@ -307,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @TargetApi(23)
     public void onRingerPermissionsClicked(View view) {
         Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
         startActivity(intent);
@@ -357,4 +352,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Restore the ringer to original state before disabling geofences or changing the radius
+     */
+    private void restoreRinger() {
+        Context context = getApplicationContext();
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    }
 }

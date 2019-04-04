@@ -14,7 +14,11 @@ public class SettingsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate-------------");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Log.i(TAG, "Exception: " + e.getMessage());
+        }
     }
 
     @Override

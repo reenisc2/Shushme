@@ -17,6 +17,7 @@ package com.example.android.shushme;
 */
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,25 +25,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 
 import java.util.List;
-
-// import com.google.android.gms.location.places.PlaceBuffer;
 
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
     private Context mContext;
     private List<Place> mPlaces;
-    public static final String TAG = PlaceListAdapter.class.getSimpleName();
+    private static final String TAG = PlaceListAdapter.class.getSimpleName();
 
     /**
      * Constructor using the context and the db cursor
      *
      * @param context the calling context/activity
      */
-    public PlaceListAdapter(Context context, List<Place> places) {
+    PlaceListAdapter(Context context, List<Place> places) {
         this.mContext = context;
         this.mPlaces = places;
     }
@@ -55,7 +53,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      * @return A new PlaceViewHolder that holds a View with the item_place_card layout
      */
     @Override
-    public PlaceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public @NonNull PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Get the RecyclerView item layout
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.item_place_card, parent, false);
@@ -69,16 +67,16 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      * @param position The current position that needs to be loaded with data
      */
     @Override
-    public void onBindViewHolder(PlaceViewHolder holder, int position) {
-        String placeName = mPlaces.get(position).getName().toString();
-        String placeAddress = mPlaces.get(position).getAddress().toString();
+    public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
+        String placeName = mPlaces.get(position).getName();
+        String placeAddress = mPlaces.get(position).getAddress();
         Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
     }
 
     @UiThread
-    public void swapPlaces(List<Place> newPlaces){
+    void swapPlaces(List<Place> newPlaces){
         mPlaces = newPlaces;
         if (mPlaces != null) {
             Log.i(TAG, "in swapPlaces, count; " + mPlaces.size());
@@ -111,10 +109,10 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         TextView nameTextView;
         TextView addressTextView;
 
-        public PlaceViewHolder(View itemView) {
+        PlaceViewHolder(View itemView) {
             super(itemView);
-            nameTextView = (TextView) itemView.findViewById(R.id.name_text_view);
-            addressTextView = (TextView) itemView.findViewById(R.id.address_text_view);
+            nameTextView = itemView.findViewById(R.id.name_text_view);
+            addressTextView = itemView.findViewById(R.id.address_text_view);
         }
 
     }

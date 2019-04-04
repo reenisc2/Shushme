@@ -39,8 +39,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
      * Careful here though, this is running on the main thread so make sure you start an AsyncTask for
      * anything that takes longer than say 10 second to run
      *
-     * @param context
-     * @param intent
+     * @param context   The context in which the receiver is running
+     * @param intent    The intent being received
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -140,8 +140,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private void setRingerMode(Context context, int mode) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // Check for DND permissions for API 24+
-        if (android.os.Build.VERSION.SDK_INT < 23 ||
-                (android.os.Build.VERSION.SDK_INT >= 23 && nm.isNotificationPolicyAccessGranted())) {
+        if (android.os.Build.VERSION.SDK_INT < 23 || nm.isNotificationPolicyAccessGranted()) {
             AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setRingerMode(mode);
         }

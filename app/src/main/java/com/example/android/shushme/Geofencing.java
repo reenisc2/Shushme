@@ -19,7 +19,6 @@ package com.example.android.shushme;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -37,7 +36,7 @@ import java.util.List;
 public class Geofencing implements ResultCallback {
 
     // Constants
-    public static final String TAG = Geofencing.class.getSimpleName();
+    private static final String TAG = Geofencing.class.getSimpleName();
     private static final long GEOFENCE_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
     private static final int MILLISEC_MULTIPLIER = 1000;
 
@@ -46,7 +45,7 @@ public class Geofencing implements ResultCallback {
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
 
-    public Geofencing(Context context, GoogleApiClient client) {
+    Geofencing(Context context, GoogleApiClient client) {
         mContext = context;
         mGoogleApiClient = client;
         mGeofencePendingIntent = null;
@@ -62,7 +61,7 @@ public class Geofencing implements ResultCallback {
      * when the Geofence is triggered
      * Triggers {@link #onResult} when the geofences have been registered successfully
      */
-    public void registerAllGeofences() {
+    void registerAllGeofences() {
         // Check that the API client is connected and that the list has Geofences in it
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected() ||
                 mGeofenceList == null || mGeofenceList.size() == 0) {
@@ -90,7 +89,7 @@ public class Geofencing implements ResultCallback {
      * registering the Geofences in the first place
      * Triggers {@link #onResult} when the geofences have been unregistered successfully
      */
-    public void unRegisterAllGeofences() {
+    void unRegisterAllGeofences() {
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             return;
         }
