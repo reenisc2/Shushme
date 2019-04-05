@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             refreshPlacesData();
         }
+        data.close();
     }
 
     /***
