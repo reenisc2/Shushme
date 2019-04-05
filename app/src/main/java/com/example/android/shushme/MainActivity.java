@@ -44,6 +44,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.android.shushme.provider.PlaceContentProvider;
 import com.example.android.shushme.provider.PlaceContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
@@ -182,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements
         List<Place> places = new ArrayList<>();
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         while (data.moveToNext()) {
-            Log.i(TAG, "In while data.moveToNext");
             guids.add(data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID)));
             String guid = data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
@@ -190,14 +190,11 @@ public class MainActivity extends AppCompatActivity implements
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Log.i(TAG, "Successfully got place");
                 Place place = response.getPlace();
-                Log.i(TAG, "Place name is: " + place.getName());
-                Log.i(TAG, "GUID: " + guid + "   placeId: " + place.getId());
                 places.add(place);
                 mAdapter.swapPlaces(places);
                 mRecyclerView.setAdapter(mAdapter);
                 mGeofencing.updateGeofencesList(places);
                 if (mGeofencesEnabled) {
-                    Log.i(TAG, "mGeofencesEnabled, so call register ----------------------------------");
                     mGeofencing.registerAllGeofences();
                 }
             }).addOnFailureListener((exception) -> {
@@ -207,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
             });
         }
-        Log.i(TAG," built guids list, size is: " + guids.size());
         data.close();
     }
 
@@ -227,6 +223,41 @@ public class MainActivity extends AppCompatActivity implements
         startActivityForResult(mapDetailIntent, PLACE_PICKER_REQUEST);
     }
 
+    /***
+     * Button Click event handler to handle clicking the "Delete location" Button
+     * In the first itereation, this will just pop the last location added off the list.
+     *
+     * @param view The view that was clicked
+     */
+
+    public void onDeletePlaceButtonClicked(View view) {
+        Uri uri = PlaceContract.PlaceEntry.CONTENT_URI;
+        Cursor data = getContentResolver().query(
+                uri,
+                null,
+                null,
+                null,
+                null);
+
+        if (data == null || data.getCount() == 0) return;
+        boolean deletingLastItem = (data.getCount() == 1);
+        data.moveToLast();
+        int idx = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry._ID));
+        String sIdx = String.valueOf(idx);
+        uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
+                .appendPath(PlaceContract.PATH_PLACES)
+                .appendPath(sIdx).build();
+        getContentResolver().delete(uri,
+                null,
+                null);
+        if (deletingLastItem) {
+            mAdapter.swapPlaces(new ArrayList<>());
+            mGeofencing.unRegisterAllGeofences();
+            restoreRinger();
+        } else {
+            refreshPlacesData();
+        }
+    }
 
     /***
      * Called when the Place Picker Activity returns back with a selected place (or after canceling)

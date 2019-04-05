@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import static com.example.android.shushme.provider.PlaceContract.PlaceEntry;
 
@@ -64,16 +65,18 @@ public class PlaceContentProvider extends ContentProvider {
     /***
      * Handles requests to insert a single new row of data
      *
-     * @param uri
-     * @param values
-     * @return
+     * @param uri   URI of db
+     * @param values    Values to insert as a ContentValues object
+     * @return uri
      */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
+        Log.i(TAG, "Insert   " + uri.toString() + "   " + values);
         final SQLiteDatabase db = mPlaceDbHelper.getWritableDatabase();
 
         // Write URI matching code to identify the match for the places directory
         int match = sUriMatcher.match(uri);
+        Log.i(TAG, "insert match    " + match);
         Uri returnUri; // URI to be returned
         switch (match) {
             case PLACES:
@@ -116,6 +119,7 @@ public class PlaceContentProvider extends ContentProvider {
 
         // Write URI match code and set a variable to return a Cursor
         int match = sUriMatcher.match(uri);
+        Log.i(TAG, "query match    " + match);
         Cursor retCursor;
 
         switch (match) {
@@ -152,15 +156,20 @@ public class PlaceContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         // Get access to the database and write URI matching code to recognize a single item
+        Log.i(TAG, "delete   " + uri.toString() + "   " + selection);
         final SQLiteDatabase db = mPlaceDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         // Keep track of the number of deleted places
+        Log.i(TAG, "match:   " + match);
         int placesDeleted; // starts as 0
         switch (match) {
             // Handle the single item case, recognized by the ID included in the URI path
             case PLACE_WITH_ID:
+                Log.i(TAG, "in match case of delete: ");
                 // Get the place ID from the URI path
+                Log.i(TAG, uri.getPathSegments().toString());
                 String id = uri.getPathSegments().get(1);
+                Log.i(TAG, "Id:    " + id);
                 // Use selections/selectionArgs to filter for this ID
                 placesDeleted = db.delete(PlaceEntry.TABLE_NAME, "_id=?", new String[]{id});
                 break;

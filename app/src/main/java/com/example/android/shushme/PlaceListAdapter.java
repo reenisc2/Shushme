@@ -77,9 +77,10 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
     @UiThread
     void swapPlaces(List<Place> newPlaces){
+        boolean needToRefresh = (newPlaces == null && mPlaces.size() > 0);
         mPlaces = newPlaces;
-        if (mPlaces != null) {
-            Log.i(TAG, "in swapPlaces, count; " + mPlaces.size());
+        if (mPlaces != null || needToRefresh) {
+            Log.i(TAG, "in swapPlaces, mPlaces not null or needToRefresh" );
             // Force the RecyclerView to refresh
             this.notifyDataSetChanged();
             ///this.notifyItemRangeChanged(0, mPlaces.size());
@@ -94,10 +95,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     @Override
     public int getItemCount() {
         if(mPlaces==null) {
-            Log.i(TAG, "getItemCount detected null");
             return 0;
         }
-        Log.i(TAG, "getItemCount: " + mPlaces.size());
         return mPlaces.size();
     }
 

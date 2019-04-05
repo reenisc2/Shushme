@@ -27,3 +27,8 @@ If the device is inside a geofence and the Enable Geofences switch is moved to t
 There is durrently no way to remove locations for geofences.
 
 Refactoring is necessary to adhere to best practices. This version was simply an attempt to get something working without the convenience of PlacePicker.
+
+## Version 1.0.5 (4/5/2019)
+
+Added a "Delete Location" button. This is proof of concept, and currently deletes the locations in the reverse order from their insertion.
+
