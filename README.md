@@ -28,7 +28,11 @@ There is durrently no way to remove locations for geofences.
 
 Refactoring is necessary to adhere to best practices. This version was simply an attempt to get something working without the convenience of PlacePicker.
 
-## Version 1.0.5 (4/5/2019)
+### Version 1.0.5 (4/5/2019)
 
 Added a "Delete Location" button. This is proof of concept, and currently deletes the locations in the reverse order from their insertion.
+
+### Version 1.0.6 (4/12/2019)
+
+It is now possible to add more than one location on the map when the user selects "Add A Location"
 

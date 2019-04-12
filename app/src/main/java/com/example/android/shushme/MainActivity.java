@@ -44,7 +44,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.android.shushme.provider.PlaceContentProvider;
 import com.example.android.shushme.provider.PlaceContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
@@ -96,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, null);
         mRecyclerView.setAdapter(mAdapter);
+        registerForContextMenu(mRecyclerView);
+
 
         // Initialize the switch state and Handle enable/disable switch change
         Switch onOffSwitch = findViewById(R.id.enable_switch);
@@ -178,17 +179,13 @@ public class MainActivity extends AppCompatActivity implements
                 null);
 
         if (data == null || data.getCount() == 0) return;
-        Log.i(TAG, "data not null or 0");
-        List<String> guids = new ArrayList<>();
         List<Place> places = new ArrayList<>();
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         while (data.moveToNext()) {
-            guids.add(data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID)));
             String guid = data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
             Log.i(TAG, request.getPlaceId());
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                Log.i(TAG, "Successfully got place");
                 Place place = response.getPlace();
                 places.add(place);
                 mAdapter.swapPlaces(places);
@@ -280,29 +277,22 @@ public class MainActivity extends AppCompatActivity implements
                     return;
                 }
 
-                String placeID = data.getStringExtra("placeId");
+                //String placeID = data.getStringExtra("placeId");
+                java.util.ArrayList<String> placeIDs = data.getStringArrayListExtra("PlaceIds");
                 Log.i(TAG, "Data Not Null!");
 
                 // Insert a new place into DB
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeID);
-                getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
+                for (String id : placeIDs) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, id);
+                    getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
+                }
             } else {
                 restoreRinger();
             }
             
             // Get live data information
             refreshPlacesData();
-/*
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-            try {
-                List<Address> placeAddress = geocoder.getFromLocation(42.458728, -71.529123, 1);
-            } catch (IllegalArgumentException illegalArgumentException) {
-                Log.e(TAG, "illegalArgument");
-            } catch (IOException ioE) {
-                Log.e(TAG, "IO exception)");
-            }
-*/
         }
     }
 

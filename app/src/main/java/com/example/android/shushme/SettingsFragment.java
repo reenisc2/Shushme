@@ -15,8 +15,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = value.toString();
-        Log.i(TAG, "in setPrefernceSummary  " + stringValue + ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
-        Log.i(TAG, "in setPrefernceSummary  " + preference.getKey() + ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+        Log.i(TAG, "in setPreferenceSummary  " + stringValue + ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+        Log.i(TAG, "in setPreferenceSummary  " + preference.getKey() + ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
         preference.setSummary(stringValue);
     }
 

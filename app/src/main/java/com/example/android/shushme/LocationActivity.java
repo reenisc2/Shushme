@@ -33,6 +33,7 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class LocationActivity extends AppCompatActivity
     private LatLng mNewPos = Constants.HOME;
     private static final String TAG = LocationActivity.class.getSimpleName();
     private FusedLocationProviderClient mLocationProvider;
-    private PointOfInterest mPoi = null;
+    private ArrayList<String> mPoi = new ArrayList<>();
 
     public LocationActivity() {
     }
@@ -135,7 +136,7 @@ public class LocationActivity extends AppCompatActivity
         mMap.addMarker(new MarkerOptions().position(poi.latLng).draggable(true));
         mMap.addCircle(circleOptions);
         mNewPos = poi.latLng;
-        mPoi = poi;
+        mPoi.add(poi.placeId);
         Log.i(TAG, "onPoiClick: " + poi.placeId);
     }
 
@@ -208,10 +209,13 @@ public class LocationActivity extends AppCompatActivity
         Intent resultIntent = new Intent();
         if (mPoi != null) {
             Bundle bundle = new Bundle();
+/*
             bundle.putString("Name", mPoi.name);
             bundle.putDouble("Lat", mPoi.latLng.latitude);
             bundle.putDouble("Lng", mPoi.latLng.longitude);
             bundle.putString("placeId", mPoi.placeId);
+*/
+            bundle.putStringArrayList("PlaceIds", mPoi);
             resultIntent.putExtras(bundle);
             setResult(RESULT_OK, resultIntent);
         } else {
