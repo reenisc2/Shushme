@@ -31,10 +31,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -62,7 +64,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         ConnectionCallbacks,
-        OnConnectionFailedListener {
+        OnConnectionFailedListener,
+        ListItemFragment.ListItemListener {
 
     // Constants
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient mClient;
     private Geofencing mGeofencing;
     private PlacesClient mPlacesClient;
+    private int mCurrentItemPosition;
 
     /**
      * Called when the activity is starting
@@ -94,6 +98,24 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = findViewById(R.id.places_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, null);
+/*
+        mAdapter.setOnLongItemClickListener(new PlaceListAdapter.onLongItemClickListener() {
+            @Override
+            public void ItemLongClicked(View v, int position) {
+                mCurrentItemPosition = position;
+            }
+
+        });
+*/
+        mAdapter.setOnLongItemClickListener(new PlaceListAdapter.onLongItemClickListener() {
+            @Override
+            public void ItemLongClicked(View v, int position) {
+                mCurrentItemPosition = position;
+                // v.showContextMenu();
+                DialogFragment newFragment = new ListItemFragment();
+                newFragment.show(getSupportFragmentManager(), "locations");
+            }
+        });
         mRecyclerView.setAdapter(mAdapter);
         registerForContextMenu(mRecyclerView);
 
@@ -336,11 +358,38 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.changes, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Log.i(TAG, "item selected: " + id);
+        switch(id) {
+            case R.id.new_radius:
+                Log.i(TAG, "new radius");
+                return true;
+            case R.id.update_rate:
+                Log.i(TAG, "update rate");
+                return true;
+            case R.id.delete:
+                Log.i(TAG, "delete");
+                return true;
+        }
+        // return true;
+        return super.onContextItemSelected(item);
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.shushme, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -357,6 +406,21 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showListItemDialog() {
+        DialogFragment dialog = new ListItemFragment();
+        dialog.show(getSupportFragmentManager(), "ListItemFragment");
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Log.i(TAG, "onDilogPositiveClick()");
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        Log.i(TAG, "onDialogNegativeClick()");
     }
 
     private void createNotificationChannel() {

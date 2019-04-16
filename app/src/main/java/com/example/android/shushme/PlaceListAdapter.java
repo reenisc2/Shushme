@@ -21,7 +21,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -33,6 +35,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
     private Context mContext;
     private List<Place> mPlaces;
+    private int mPosition;
+    private onLongItemClickListener mOnLongItemClickListener;
     private static final String TAG = PlaceListAdapter.class.getSimpleName();
 
     /**
@@ -73,6 +77,15 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mOnLongItemClickListener != null) {
+                    mOnLongItemClickListener.ItemLongClicked(v, position);
+                }
+                return true;
+            }
+        });
     }
 
     @UiThread
@@ -100,10 +113,25 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         return mPlaces.size();
     }
 
+    public int getPosition() {
+        return mPosition;
+    }
+
+    public void setPosition(int position) {
+        this.mPosition = position;
+    }
+
+    public void setOnLongItemClickListener(onLongItemClickListener onLongItemClickListener) {
+        mOnLongItemClickListener = onLongItemClickListener;
+    }
+
+
+
     /**
      * PlaceViewHolder class for the recycler view item
      */
-    class PlaceViewHolder extends RecyclerView.ViewHolder {
+    class PlaceViewHolder extends RecyclerView.ViewHolder
+            /* implements View.OnCreateContextMenuListener */ {
 
         TextView nameTextView;
         TextView addressTextView;
@@ -112,7 +140,22 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             super(itemView);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             addressTextView = itemView.findViewById(R.id.address_text_view);
+            // itemView.setOnCreateContextMenuListener(this);
         }
 
+/*
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Select The Action");
+            menu.add(Menu.NONE, R.id.new_radius, Menu.NONE, "fence radius");
+            menu.add(Menu.NONE, R.id.update_rate, Menu.NONE, "update rate in seconds");
+            menu.add(Menu.NONE, R.id.delete, Menu.NONE, "Delete this location");
+        }
+*/
+
+    }
+
+    public interface onLongItemClickListener {
+        void ItemLongClicked(View v, int position);
     }
 }

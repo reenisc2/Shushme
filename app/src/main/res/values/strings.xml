@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShushMe V1.0.6</string>
+    <string name="app_name">ShushMe V1.0.7</string>
     <string name="add_new_location">Add new location</string>
     <string name="location_list">Locations</string>
     <string name="need_location_permission_message">You need to enable location permissions first</string>
@@ -14,7 +14,7 @@
     <string name="touch_to_relaunch">Touch to launch the app.</string>
     <string name="back_to_normal">Back to normal</string>
     <string name="title_activity_location">Select Location</string>
-    <string name="api_key">Insert API key here</string>
+    <string name="api_key">AIzaSyCd5fAqaKcZpKg8V-DzKt9ylKL6bdJojzE</string>
     <string name="radius_hint">Fence radius in meters</string>
     <string name="radius_button">Set radius</string>
     <string name="title_activity_permission">Permissions</string>
@@ -22,4 +22,6 @@
     <string name="channel_description">Notifications when ringer is turned off/on</string>
     <string name="ringer_warning">Warning: Deactivating geofences does not automatically restore ringer to normal mode.</string>
     <string name="delete_location">Delete location</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>
