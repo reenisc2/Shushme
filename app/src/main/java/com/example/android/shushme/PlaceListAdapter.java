@@ -36,7 +36,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     private Context mContext;
     private List<Place> mPlaces;
     private int mPosition;
-    private onLongItemClickListener mOnLongItemClickListener;
+    // private onLongItemClickListener mOnLongItemClickListener;
+    private onItemClickListener mOnItemClickListener;
     private static final String TAG = PlaceListAdapter.class.getSimpleName();
 
     /**
@@ -77,6 +78,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
+        holder.radiusTextView.setText("100");
+/*
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -84,6 +87,16 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
                     mOnLongItemClickListener.ItemLongClicked(v, position);
                 }
                 return true;
+            }
+        });
+*/
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.ItemClicked(v, position);
+                }
+                return;
             }
         });
     }
@@ -121,8 +134,8 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         this.mPosition = position;
     }
 
-    public void setOnLongItemClickListener(onLongItemClickListener onLongItemClickListener) {
-        mOnLongItemClickListener = onLongItemClickListener;
+    public void setOnItemClickListener(onItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
     }
 
 
@@ -135,11 +148,13 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
         TextView nameTextView;
         TextView addressTextView;
+        TextView radiusTextView;
 
         PlaceViewHolder(View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             addressTextView = itemView.findViewById(R.id.address_text_view);
+            radiusTextView = itemView.findViewById(R.id.radius_text_view);
             // itemView.setOnCreateContextMenuListener(this);
         }
 
@@ -155,7 +170,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
 
     }
 
-    public interface onLongItemClickListener {
-        void ItemLongClicked(View v, int position);
+    public interface onItemClickListener {
+        void ItemClicked(View v, int position);
     }
 }

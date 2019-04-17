@@ -107,9 +107,9 @@ public class MainActivity extends AppCompatActivity implements
 
         });
 */
-        mAdapter.setOnLongItemClickListener(new PlaceListAdapter.onLongItemClickListener() {
+        mAdapter.setOnItemClickListener(new PlaceListAdapter.onItemClickListener() {
             @Override
-            public void ItemLongClicked(View v, int position) {
+            public void ItemClicked(View v, int position) {
                 mCurrentItemPosition = position;
                 // v.showContextMenu();
                 DialogFragment newFragment = new ListItemFragment();
