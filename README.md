@@ -36,3 +36,8 @@ Added a "Delete Location" button. This is proof of concept, and currently delete
 
 It is now possible to add more than one location on the map when the user selects "Add A Location"
 
+### Version 1.0.7 (4/16/2019)
+
+WIP - Context menu or Alert Dialog to set radius, or to choose to delete a location. Does not work yet, and values are not saved.
+Moved API key to a separate file that is not checked in (no accidental checkins).
+

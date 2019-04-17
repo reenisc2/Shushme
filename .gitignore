@@ -39,3 +39,6 @@ project.properties
 # Gradle-based build
 .gradle
 build/
+
+#api key file
+app/src/main/res/values/api_key.xml
