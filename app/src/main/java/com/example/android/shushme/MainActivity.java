@@ -36,7 +36,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -98,20 +97,11 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = findViewById(R.id.places_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, null);
-/*
-        mAdapter.setOnLongItemClickListener(new PlaceListAdapter.onLongItemClickListener() {
-            @Override
-            public void ItemLongClicked(View v, int position) {
-                mCurrentItemPosition = position;
-            }
 
-        });
-*/
         mAdapter.setOnItemClickListener(new PlaceListAdapter.onItemClickListener() {
             @Override
             public void ItemClicked(View v, int position) {
                 mCurrentItemPosition = position;
-                // v.showContextMenu();
                 DialogFragment newFragment = new ListItemFragment();
                 newFragment.show(getSupportFragmentManager(), "locations");
             }
@@ -201,15 +191,17 @@ public class MainActivity extends AppCompatActivity implements
                 null);
 
         if (data == null || data.getCount() == 0) return;
-        List<Place> places = new ArrayList<>();
+        List<LocationObj> places = new ArrayList<>();
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         while (data.moveToNext()) {
             String guid = data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
+            int mId = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry._ID));
+            float rad = data.getFloat(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_RADIUS));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
             Log.i(TAG, request.getPlaceId());
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
-                places.add(place);
+                places.add(new LocationObj(place, rad, mId));
                 mAdapter.swapPlaces(places);
                 mRecyclerView.setAdapter(mAdapter);
                 mGeofencing.updateGeofencesList(places);
@@ -262,20 +254,7 @@ public class MainActivity extends AppCompatActivity implements
         boolean deletingLastItem = (data.getCount() == 1);
         data.moveToLast();
         int idx = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry._ID));
-        String sIdx = String.valueOf(idx);
-        uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
-                .appendPath(PlaceContract.PATH_PLACES)
-                .appendPath(sIdx).build();
-        getContentResolver().delete(uri,
-                null,
-                null);
-        if (deletingLastItem) {
-            mAdapter.swapPlaces(new ArrayList<>());
-            mGeofencing.unRegisterAllGeofences();
-            restoreRinger();
-        } else {
-            refreshPlacesData();
-        }
+        deleteLocation(idx, deletingLastItem);
         data.close();
     }
 
@@ -307,6 +286,8 @@ public class MainActivity extends AppCompatActivity implements
                 for (String id : placeIDs) {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, id);
+                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS,
+                            ShushmePreferences.getRadius(getApplicationContext()));
                     getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
                 }
             } else {
@@ -358,32 +339,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.changes, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        Log.i(TAG, "item selected: " + id);
-        switch(id) {
-            case R.id.new_radius:
-                Log.i(TAG, "new radius");
-                return true;
-            case R.id.update_rate:
-                Log.i(TAG, "update rate");
-                return true;
-            case R.id.delete:
-                Log.i(TAG, "delete");
-                return true;
-        }
-        // return true;
-        return super.onContextItemSelected(item);
-    }
-
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.shushme, menu);
@@ -414,8 +369,29 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        Log.i(TAG, "onDilogPositiveClick()");
+    public void onDialogPositiveClick(float rad, Integer upd, Boolean checked) {
+        Log.i(TAG, "onDialogPositiveClick()");
+        Log.i(TAG, mCurrentItemPosition + "   " + rad + "   " + upd + "   " + checked);
+        LocationObj lo = mAdapter.getItem(mCurrentItemPosition);
+        Log.i(TAG, lo.getName());
+        if (checked) {
+            deleteLocation(lo.getTableIdx(), mAdapter.getItemCount() == 1);
+        } else {
+            if (rad > 0) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, lo.getId());
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, rad);
+                String sIdx = String.valueOf(lo.getTableIdx());
+                Uri uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
+                        .appendPath(PlaceContract.PATH_PLACES)
+                        .appendPath(sIdx).build();
+                getContentResolver().update(uri, contentValues, null, null);
+            }
+            if (upd > 0) {
+                // one step at a time
+            }
+            refreshPlacesData();
+        }
     }
 
     @Override
@@ -445,5 +421,27 @@ public class MainActivity extends AppCompatActivity implements
         Context context = getApplicationContext();
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    }
+
+    /**
+     * Delete a location entry based on its _ID in the table
+     */
+
+    private void deleteLocation(int idx, boolean deletingLastItem) {
+        String sIdx = String.valueOf(idx);
+        Uri uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
+                .appendPath(PlaceContract.PATH_PLACES)
+                .appendPath(sIdx).build();
+        getContentResolver().delete(uri,
+                null,
+                null);
+        if (deletingLastItem) {
+            mAdapter.swapPlaces(new ArrayList<>());
+            mGeofencing.unRegisterAllGeofences();
+            restoreRinger();
+        } else {
+            refreshPlacesData();
+        }
+
     }
 }

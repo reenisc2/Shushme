@@ -9,6 +9,9 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 
 public class ListItemFragment extends DialogFragment {
     private static final String TAG = ListItemFragment.class.getSimpleName();
@@ -16,22 +19,31 @@ public class ListItemFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Get the layout inflater
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        // Inflate the dialog and set the layout
-        builder.setView(inflater.inflate(R.layout.dialog_listitem, null))
+        View mView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_listitem, null);
+        final EditText mRadius = (EditText) mView.findViewById(R.id.radius);
+        final EditText mUpdate = (EditText) mView.findViewById(R.id.location_updates);
+        final CheckBox mDelete = (CheckBox) mView.findViewById(R.id.delete_location_checkbox);
+        builder.setView(mView)
                 // Add action buttons
         .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 Log.i(TAG, "Clicked save");
-                listener.onDialogPositiveClick(ListItemFragment.this);
+                dialog.dismiss();
+                String s = mRadius.getText().toString();
+                float rad = s.isEmpty() ? -1 : Float.valueOf(s);
+                s = mUpdate.getText().toString();
+                Integer upd = s.isEmpty() ? -1 : Integer.valueOf(s);
+                Boolean checked = mDelete.isChecked();
+                Log.i(TAG, rad + "   " + upd + "   " + checked);
+                listener.onDialogPositiveClick(rad, upd, checked);
             }
         })
          .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
              public void onClick(DialogInterface dialog, int id) {
                   // ListItemFragment.this.getDialog().cancel();
                  listener.onDialogNegativeClick(ListItemFragment.this);
+                 dialog.cancel();
               }
          });
         return builder.create();
@@ -42,7 +54,7 @@ public class ListItemFragment extends DialogFragment {
      * Each method passes the DialogFragment in case the host neds to query it.
      */
     public interface ListItemListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onDialogPositiveClick(float radius, Integer updates, Boolean cheked);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -60,12 +72,6 @@ public class ListItemFragment extends DialogFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement ListItemListener");
         }
-    }
-
-    public void onDeleteBoxChecked(View v) {
-        Log.i(TAG, "Delete box checked, initial value: " + mDeleteChecked);
-        mDeleteChecked = !mDeleteChecked;
-        Log.i(TAG, "Final value: " + mDeleteChecked);
     }
 
 }

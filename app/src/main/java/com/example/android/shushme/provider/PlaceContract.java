@@ -40,5 +40,6 @@ public class PlaceContract {
         public static final String TABLE_NAME = "places";
         public static final String COLUMN_PLACE_ID = "placeID";
         public static final String COLUMN_RADIUS = "radius";
+        public static final String COLUMN_EXPIRATION = "expiration";
     }
 }

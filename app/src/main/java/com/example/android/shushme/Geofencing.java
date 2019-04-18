@@ -113,17 +113,18 @@ public class Geofencing implements ResultCallback {
      *
      * @param places the PlaceBuffer result of the getPlaceById call
      */
-    public void updateGeofencesList(List<Place> places) {
+    public void updateGeofencesList(List<LocationObj> places) {
         Log.i(TAG, "update fence list");
         mGeofenceList = new ArrayList<>();
         if (places == null || places.size() == 0) return;
-        for (Place place : places) {
+        for (LocationObj place : places) {
             // Read the place information from the DB cursor
             String placeUID = place.getId();
             double placeLat = place.getLatLng().latitude;
             double placeLng = place.getLatLng().longitude;
             Log.i(TAG, placeUID);
-            float radius = ShushmePreferences.getRadius(mContext);
+            // float radius = ShushmePreferences.getRadius(mContext);
+            float radius = place.getRadius();
             int responsiveness = ShushmePreferences.getNotifications(mContext) * MILLISEC_MULTIPLIER;
 
             // Build a Geofence object
@@ -171,7 +172,7 @@ public class Geofencing implements ResultCallback {
 
     @Override
     public void onResult(@NonNull Result result) {
-        Log.e(TAG, String.format("Error adding/removing geofence : %s",
+        Log.e(TAG, String.format("Result status adding/removing geofence : %s",
                 result.getStatus().toString()));
     }
 

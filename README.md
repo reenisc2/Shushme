@@ -41,3 +41,14 @@ It is now possible to add more than one location on the map when the user select
 WIP - Context menu or Alert Dialog to set radius, or to choose to delete a location. Does not work yet, and values are not saved.
 Moved API key to a separate file that is not checked in (no accidental checkins).
 
+### Version 1.0.8 (4/17/2019)
+
+Short click instead of long click when selecting a location from the list.
+
+### Version 1.0.9 (4/18/2019)
+
+If no radius is set, the default of 100.0 meters is used. To change the default, use the preferences setting from the action bar.
+When a location is added, the radius is displayed below the address on the list on the main screen.
+Click on an item to change the radius or to delete the item. If the radius is changed, that change will be reflected in the list.
+On the alert dialog box to change the radius or delete the item, the buttons are now "Cancel" or "OK" instead of "Cancel" and "Save".
+

@@ -34,7 +34,7 @@ import java.util.List;
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
     private Context mContext;
-    private List<Place> mPlaces;
+    private List<LocationObj> mPlaces;
     private int mPosition;
     // private onLongItemClickListener mOnLongItemClickListener;
     private onItemClickListener mOnItemClickListener;
@@ -45,7 +45,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      *
      * @param context the calling context/activity
      */
-    PlaceListAdapter(Context context, List<Place> places) {
+    PlaceListAdapter(Context context, List<LocationObj> places) {
         this.mContext = context;
         this.mPlaces = places;
     }
@@ -78,18 +78,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
-        holder.radiusTextView.setText("100");
-/*
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mOnLongItemClickListener != null) {
-                    mOnLongItemClickListener.ItemLongClicked(v, position);
-                }
-                return true;
-            }
-        });
-*/
+        holder.radiusTextView.setText(String.valueOf(mPlaces.get(position).getRadius()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +91,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     }
 
     @UiThread
-    void swapPlaces(List<Place> newPlaces){
+    void swapPlaces(List<LocationObj> newPlaces){
         boolean needToRefresh = (newPlaces == null && mPlaces.size() > 0);
         mPlaces = newPlaces;
         if (mPlaces != null || needToRefresh) {
@@ -134,6 +123,10 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         this.mPosition = position;
     }
 
+    public LocationObj getItem(int position) {
+        return mPlaces.get(position);
+    }
+
     public void setOnItemClickListener(onItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
@@ -155,19 +148,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
             nameTextView = itemView.findViewById(R.id.name_text_view);
             addressTextView = itemView.findViewById(R.id.address_text_view);
             radiusTextView = itemView.findViewById(R.id.radius_text_view);
-            // itemView.setOnCreateContextMenuListener(this);
         }
-
-/*
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.setHeaderTitle("Select The Action");
-            menu.add(Menu.NONE, R.id.new_radius, Menu.NONE, "fence radius");
-            menu.add(Menu.NONE, R.id.update_rate, Menu.NONE, "update rate in seconds");
-            menu.add(Menu.NONE, R.id.delete, Menu.NONE, "Delete this location");
-        }
-*/
-
     }
 
     public interface onItemClickListener {

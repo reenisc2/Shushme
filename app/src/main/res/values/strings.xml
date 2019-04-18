@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShushMe V1.0.8</string>
+    <string name="app_name">ShushMe V1.0.9</string>
     <string name="add_new_location">Add new location</string>
     <string name="location_list">Locations</string>
     <string name="need_location_permission_message">You need to enable location permissions first</string>
@@ -21,6 +21,6 @@
     <string name="channel_description">Notifications when ringer is turned off/on</string>
     <string name="ringer_warning">Warning: Deactivating geofences does not automatically restore ringer to normal mode.</string>
     <string name="delete_location">Delete location</string>
-    <string name="save">Save</string>
+    <string name="save">OK</string>
     <string name="cancel">Cancel</string>
 </resources>
