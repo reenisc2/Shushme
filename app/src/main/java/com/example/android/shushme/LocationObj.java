@@ -12,6 +12,7 @@ public class LocationObj {
     private Place mPlace;
     private float mRadius;
     private int mTableIdx;
+    private int mUpdateLocation;
 
     public LocationObj() {
     }
@@ -19,17 +20,20 @@ public class LocationObj {
     public LocationObj(Place place) {
         mPlace = place;
         mRadius = 150;
+        mUpdateLocation = 300;
     }
 
-    public LocationObj(Place place, float radius) {
+    public LocationObj(Place place, float radius, int update) {
         mPlace = place;
         mRadius = radius;
+        mUpdateLocation = update;
     }
 
-    public LocationObj(Place place, float radius, int id) {
+    public LocationObj(Place place, float radius, int id, int update) {
         mPlace = place;
         mRadius = radius;
         mTableIdx = id;
+        mUpdateLocation = update;
     }
 
     public String getId() {
@@ -71,4 +75,8 @@ public class LocationObj {
     public void setTableIdx(int id) {
         mTableIdx = id;
     }
+
+    public void setUpdateLocation(int update) { mUpdateLocation = update; }
+
+    public int getUpdateLocation() { return mUpdateLocation; }
 }

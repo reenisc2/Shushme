@@ -18,10 +18,17 @@ public class ListItemFragment extends DialogFragment {
     private boolean mDeleteChecked = false;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            Log.i(TAG, "empty bundle!!!");
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View mView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_listitem, null);
         final EditText mRadius = (EditText) mView.findViewById(R.id.radius);
+        //mRadius.setText(String.valueOf(savedInstanceState.getFloat("radius", 100)));
+        mRadius.setText(String.valueOf(100));
         final EditText mUpdate = (EditText) mView.findViewById(R.id.location_updates);
+        // mUpdate.setText(String.valueOf(savedInstanceState.getInt("update", 300)));
+        mUpdate.setText(String.valueOf(300));
         final CheckBox mDelete = (CheckBox) mView.findViewById(R.id.delete_location_checkbox);
         builder.setView(mView)
                 // Add action buttons

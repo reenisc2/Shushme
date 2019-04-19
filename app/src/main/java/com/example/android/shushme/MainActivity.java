@@ -102,7 +102,11 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void ItemClicked(View v, int position) {
                 mCurrentItemPosition = position;
+                Bundle args = new Bundle();
+                args.putFloat("radius", mAdapter.getItem(position).getRadius());
+                args.putInt("updates", mAdapter.getItem(position).getUpdateLocation());
                 DialogFragment newFragment = new ListItemFragment();
+                newFragment.setArguments(args);
                 newFragment.show(getSupportFragmentManager(), "locations");
             }
         });
@@ -197,11 +201,12 @@ public class MainActivity extends AppCompatActivity implements
             String guid = data.getString(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
             int mId = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry._ID));
             float rad = data.getFloat(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_RADIUS));
+            int update = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_UPDATE));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
             Log.i(TAG, request.getPlaceId());
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
-                places.add(new LocationObj(place, rad, mId));
+                places.add(new LocationObj(place, rad, mId, update));
                 mAdapter.swapPlaces(places);
                 mRecyclerView.setAdapter(mAdapter);
                 mGeofencing.updateGeofencesList(places);
@@ -288,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, id);
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS,
                             ShushmePreferences.getRadius(getApplicationContext()));
+                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE,
+                            ShushmePreferences.getNotifications(getApplicationContext()));
                     getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
                 }
             } else {
@@ -377,18 +384,18 @@ public class MainActivity extends AppCompatActivity implements
         if (checked) {
             deleteLocation(lo.getTableIdx(), mAdapter.getItemCount() == 1);
         } else {
-            if (rad > 0) {
+            if (rad > 0 || upd > 0) {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, lo.getId());
-                contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, rad);
+                float newRad = rad > 0 ? rad : lo.getRadius();
+                int newUpd = upd > 0 ? upd : lo.getUpdateLocation();
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, newRad);
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE, newUpd);
                 String sIdx = String.valueOf(lo.getTableIdx());
                 Uri uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
                         .appendPath(PlaceContract.PATH_PLACES)
                         .appendPath(sIdx).build();
                 getContentResolver().update(uri, contentValues, null, null);
-            }
-            if (upd > 0) {
-                // one step at a time
             }
             refreshPlacesData();
         }

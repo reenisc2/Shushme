@@ -28,7 +28,7 @@ public class PlaceDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "shushme.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Constructor
     public PlaceDbHelper(Context context) {
@@ -43,6 +43,7 @@ public class PlaceDbHelper extends SQLiteOpenHelper {
                 PlaceEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 PlaceEntry.COLUMN_PLACE_ID + " TEXT NOT NULL, " +
                 PlaceEntry.COLUMN_RADIUS + " FLOAT, " +
+                PlaceEntry.COLUMN_UPDATE + " INTEGER, " +
                 "UNIQUE (" + PlaceEntry.COLUMN_PLACE_ID + ") ON CONFLICT REPLACE" +
                 "); ";
 
