@@ -102,11 +102,9 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void ItemClicked(View v, int position) {
                 mCurrentItemPosition = position;
-                Bundle args = new Bundle();
-                args.putFloat("radius", mAdapter.getItem(position).getRadius());
-                args.putInt("updates", mAdapter.getItem(position).getUpdateLocation());
-                DialogFragment newFragment = new ListItemFragment();
-                newFragment.setArguments(args);
+                DialogFragment newFragment = ListItemFragment.newInstance(
+                        mAdapter.getItem(position).getRadius(),
+                        mAdapter.getItem(position).getUpdateLocation());
                 newFragment.show(getSupportFragmentManager(), "locations");
             }
         });
@@ -389,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, lo.getId());
                 float newRad = rad > 0 ? rad : lo.getRadius();
                 int newUpd = upd > 0 ? upd : lo.getUpdateLocation();
+                Log.i(TAG, "udate rate value to be assigned: " + newUpd);
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, newRad);
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE, newUpd);
                 String sIdx = String.valueOf(lo.getTableIdx());

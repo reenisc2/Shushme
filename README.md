@@ -52,3 +52,6 @@ When a location is added, the radius is displayed below the address on the list 
 Click on an item to change the radius or to delete the item. If the radius is changed, that change will be reflected in the list.
 On the alert dialog box to change the radius or delete the item, the buttons are now "Cancel" or "OK" instead of "Cancel" and "Save".
 
+### Version 1.0.10 (4/18/2019)
+
+The current values of radius and update rate are displayed when the alert dialog box pops up for input.

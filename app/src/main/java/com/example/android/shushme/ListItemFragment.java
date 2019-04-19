@@ -15,20 +15,26 @@ import android.widget.EditText;
 
 public class ListItemFragment extends DialogFragment {
     private static final String TAG = ListItemFragment.class.getSimpleName();
-    private boolean mDeleteChecked = false;
+
+    public static ListItemFragment newInstance(float radius, int update_rate) {
+        ListItemFragment f = new ListItemFragment();
+
+        Bundle args = new Bundle();
+        args.putFloat("radius", radius);
+        args.putInt("updates", update_rate);
+        f.setArguments(args);
+        Log.i(TAG, "In factory " + f.getArguments().toString());
+        return f;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            Log.i(TAG, "empty bundle!!!");
-        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View mView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_listitem, null);
         final EditText mRadius = (EditText) mView.findViewById(R.id.radius);
-        //mRadius.setText(String.valueOf(savedInstanceState.getFloat("radius", 100)));
-        mRadius.setText(String.valueOf(100));
+        mRadius.setText(String.valueOf(getArguments().getFloat("radius", 100)));
         final EditText mUpdate = (EditText) mView.findViewById(R.id.location_updates);
-        // mUpdate.setText(String.valueOf(savedInstanceState.getInt("update", 300)));
-        mUpdate.setText(String.valueOf(300));
+        mUpdate.setText(String.valueOf(getArguments().getInt("updates", 300)));
         final CheckBox mDelete = (CheckBox) mView.findViewById(R.id.delete_location_checkbox);
         builder.setView(mView)
                 // Add action buttons
