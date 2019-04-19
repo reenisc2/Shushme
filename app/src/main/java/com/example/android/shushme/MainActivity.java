@@ -236,14 +236,14 @@ public class MainActivity extends AppCompatActivity implements
         Intent mapDetailIntent = new Intent(MainActivity.this, LocationActivity.class);
         List<LocationObj> currentPlaces = mAdapter.getPlaces();
         if (currentPlaces == null) {
-            mapDetailIntent.putExtra("placeCount", 0);
+            mapDetailIntent.putExtra(Constants.PLACE_COUNT, 0);
         } else {
             int count = currentPlaces.size();
-            mapDetailIntent.putExtra("placeCount", count);
+            mapDetailIntent.putExtra(Constants.PLACE_COUNT, count);
             for (int i = 0; i < count; i++) {
                 LocationObj l = currentPlaces.get(i);
-                mapDetailIntent.putExtra("latlng_" + i, l.getLatLng());
-                mapDetailIntent.putExtra("radius_" + i, l.getRadius());
+                mapDetailIntent.putExtra(Constants.LAT_LNG + i, l.getLatLng());
+                mapDetailIntent.putExtra(Constants.RAD + i, l.getRadius());
             }
         }
 
@@ -396,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements
             deleteLocation(lo.getTableIdx(), mAdapter.getItemCount() == 1);
         } else {
             if (rad > 0 || upd > 0) {
+                restoreRinger();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, lo.getId());
                 float newRad = rad > 0 ? rad : lo.getRadius();
@@ -408,8 +409,8 @@ public class MainActivity extends AppCompatActivity implements
                         .appendPath(PlaceContract.PATH_PLACES)
                         .appendPath(sIdx).build();
                 getContentResolver().update(uri, contentValues, null, null);
+                refreshPlacesData();
             }
-            refreshPlacesData();
         }
     }
 

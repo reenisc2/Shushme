@@ -119,7 +119,6 @@ public class PlaceContentProvider extends ContentProvider {
 
         // Write URI match code and set a variable to return a Cursor
         int match = sUriMatcher.match(uri);
-        Log.i(TAG, "query match    " + match);
         Cursor retCursor;
 
         switch (match) {
@@ -156,7 +155,6 @@ public class PlaceContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         // Get access to the database and write URI matching code to recognize a single item
-        Log.i(TAG, "delete   " + uri.toString() + "   " + selection);
         final SQLiteDatabase db = mPlaceDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         // Keep track of the number of deleted places
@@ -165,11 +163,8 @@ public class PlaceContentProvider extends ContentProvider {
         switch (match) {
             // Handle the single item case, recognized by the ID included in the URI path
             case PLACE_WITH_ID:
-                Log.i(TAG, "in match case of delete: ");
                 // Get the place ID from the URI path
-                Log.i(TAG, uri.getPathSegments().toString());
                 String id = uri.getPathSegments().get(1);
-                Log.i(TAG, "Id:    " + id);
                 // Use selections/selectionArgs to filter for this ID
                 placesDeleted = db.delete(PlaceEntry.TABLE_NAME, "_id=?", new String[]{id});
                 break;

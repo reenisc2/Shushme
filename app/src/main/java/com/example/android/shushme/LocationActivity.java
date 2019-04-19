@@ -63,11 +63,11 @@ public class LocationActivity extends AppCompatActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        int count = intent.getIntExtra("placeCount", 0);
+        int count = intent.getIntExtra(Constants.PLACE_COUNT, 0);
         if (count > 0) {
             for (int idx = 0; idx < count; idx++) {
-                latLngs.add(intent.getParcelableExtra("latlng_" + idx));
-                rads.add(intent.getFloatExtra("radius_" + idx, 100));
+                latLngs.add(intent.getParcelableExtra(Constants.LAT_LNG + idx));
+                rads.add(intent.getFloatExtra(Constants.RAD + idx, 100));
             }
         }
         ActionBar actionBar = getSupportActionBar();
@@ -228,12 +228,6 @@ public class LocationActivity extends AppCompatActivity
         Intent resultIntent = new Intent();
         if (mPoi != null) {
             Bundle bundle = new Bundle();
-/*
-            bundle.putString("Name", mPoi.name);
-            bundle.putDouble("Lat", mPoi.latLng.latitude);
-            bundle.putDouble("Lng", mPoi.latLng.longitude);
-            bundle.putString("placeId", mPoi.placeId);
-*/
             bundle.putStringArrayList("PlaceIds", mPoi);
             resultIntent.putExtras(bundle);
             setResult(RESULT_OK, resultIntent);

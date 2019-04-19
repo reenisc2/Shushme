@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ShushMe V1.0.11</string>
-    <string name="add_new_location">Add new location</string>
+    <string name="add_new_location">View or Add Locations</string>
     <string name="location_list">Locations</string>
     <string name="need_location_permission_message">You need to enable location permissions first</string>
     <string name="location_permissions_granted_message">Location Permissions Granted</string>

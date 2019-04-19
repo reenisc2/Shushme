@@ -31,5 +31,12 @@ public final class Constants {
 
     public static final String CHANNEL_ID = "Shushme notifications";
 
+    /**
+     * Names of extras passed between MainActivity and LocationActivity
+     */
+    public static final String PLACE_COUNT = "placeCount";
+    public static final String LAT_LNG = "latng_";
+    public static final String RAD = "rad_";
+
 }
 
