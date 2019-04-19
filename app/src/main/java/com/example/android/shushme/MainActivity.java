@@ -234,6 +234,19 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         Intent mapDetailIntent = new Intent(MainActivity.this, LocationActivity.class);
+        List<LocationObj> currentPlaces = mAdapter.getPlaces();
+        if (currentPlaces == null) {
+            mapDetailIntent.putExtra("placeCount", 0);
+        } else {
+            int count = currentPlaces.size();
+            mapDetailIntent.putExtra("placeCount", count);
+            for (int i = 0; i < count; i++) {
+                LocationObj l = currentPlaces.get(i);
+                mapDetailIntent.putExtra("latlng_" + i, l.getLatLng());
+                mapDetailIntent.putExtra("radius_" + i, l.getRadius());
+            }
+        }
+
         startActivityForResult(mapDetailIntent, PLACE_PICKER_REQUEST);
     }
 

@@ -131,6 +131,10 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         mOnItemClickListener = onItemClickListener;
     }
 
+    public List<LocationObj> getPlaces() {
+        return mPlaces;
+    }
+
 
 
     /**

@@ -52,6 +52,9 @@ public class LocationActivity extends AppCompatActivity
     private static final String TAG = LocationActivity.class.getSimpleName();
     private FusedLocationProviderClient mLocationProvider;
     private ArrayList<String> mPoi = new ArrayList<>();
+    private List<LatLng> latLngs = new ArrayList<>();
+    private ArrayList rads = new ArrayList<>();
+
 
     public LocationActivity() {
     }
@@ -59,6 +62,14 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        int count = intent.getIntExtra("placeCount", 0);
+        if (count > 0) {
+            for (int idx = 0; idx < count; idx++) {
+                latLngs.add(intent.getParcelableExtra("latlng_" + idx));
+                rads.add(intent.getFloatExtra("radius_" + idx, 100));
+            }
+        }
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -88,6 +99,14 @@ public class LocationActivity extends AppCompatActivity
         mMap.setOnMapLongClickListener(this);
         mMap.setOnPoiClickListener(this);
         enableMyLocation();
+        if (latLngs != null && latLngs.size() > 0) {
+            for (int i = 0; i < latLngs.size(); i++) {
+                float radius = (float)rads.get(i);
+                CircleOptions circleOptions = new CircleOptions().center(latLngs.get(i)).radius(radius).strokeColor(0xffff0000).strokeWidth(4);
+                mMap.addMarker(new MarkerOptions().position(latLngs.get(i)).draggable(true));
+                mMap.addCircle(circleOptions);
+            }
+        }
     }
 
     @Override

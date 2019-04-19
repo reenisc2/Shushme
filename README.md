@@ -55,3 +55,7 @@ On the alert dialog box to change the radius or delete the item, the buttons are
 ### Version 1.0.10 (4/18/2019)
 
 The current values of radius and update rate are displayed when the alert dialog box pops up for input.
+
+### Version 1.0.11 (4/19/2019)
+
+Previously selected locations and their radius circles are displayed on the map when "Add New Location" is selected.
