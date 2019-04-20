@@ -220,21 +220,13 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         Log.d(TAG, "onBackPressed");
+        backAction();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         Log.d(TAG, "onSupportNavigateUp");
-        Intent resultIntent = new Intent();
-        if (mPoi != null) {
-            Bundle bundle = new Bundle();
-            bundle.putStringArrayList("PlaceIds", mPoi);
-            resultIntent.putExtras(bundle);
-            setResult(RESULT_OK, resultIntent);
-        } else {
-            setResult(RESULT_OK);
-        }
-        finish();
+        backAction();
         return true;
     }
     private void enableMyLocation() {
@@ -245,5 +237,18 @@ public class LocationActivity extends AppCompatActivity
         } catch (SecurityException e) {
             Toast.makeText(this, "No permissions!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void backAction() {
+        Intent resultIntent = new Intent();
+        if (mPoi != null) {
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("PlaceIds", mPoi);
+            resultIntent.putExtras(bundle);
+            setResult(RESULT_OK, resultIntent);
+        } else {
+            setResult(RESULT_OK);
+        }
+        finish();
     }
 }

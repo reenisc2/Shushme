@@ -63,3 +63,7 @@ Previously selected locations and their radius circles are displayed on the map 
 ### Version 1.0.12 (4/20/2019)
 
 Labels on the Alert Dialog
+
+### Version 1.0.13 (4/20/2019)
+
+Make the back arrow work.
