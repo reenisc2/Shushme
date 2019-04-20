@@ -10,7 +10,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
-        android:title="Settings"
+        android:title="Default Settings"
         app:showAsAction="never" />
 
 </menu>

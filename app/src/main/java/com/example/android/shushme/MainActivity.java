@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity implements
                 mCurrentItemPosition = position;
                 DialogFragment newFragment = ListItemFragment.newInstance(
                         mAdapter.getItem(position).getRadius(),
-                        mAdapter.getItem(position).getUpdateLocation());
+                        mAdapter.getItem(position).getUpdateLocation(),
+                        mAdapter.getItem(position).getName());
                 newFragment.show(getSupportFragmentManager(), "locations");
             }
         });

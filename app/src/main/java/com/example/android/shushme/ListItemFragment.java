@@ -12,16 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class ListItemFragment extends DialogFragment {
     private static final String TAG = ListItemFragment.class.getSimpleName();
 
-    public static ListItemFragment newInstance(float radius, int update_rate) {
+    public static ListItemFragment newInstance(float radius, int update_rate, String name) {
         ListItemFragment f = new ListItemFragment();
 
         Bundle args = new Bundle();
         args.putFloat("radius", radius);
         args.putInt("updates", update_rate);
+        args.putString("name", name);
         f.setArguments(args);
         Log.i(TAG, "In factory " + f.getArguments().toString());
         return f;
@@ -35,6 +37,8 @@ public class ListItemFragment extends DialogFragment {
         mRadius.setText(String.valueOf(getArguments().getFloat("radius", 100)));
         final EditText mUpdate = (EditText) mView.findViewById(R.id.location_updates);
         mUpdate.setText(String.valueOf(getArguments().getInt("updates", 300)));
+        final TextView mName = (TextView) mView.findViewById(R.id.modify_location);
+        mName.setText(getArguments().getString("name", "Modify Location"));
         final CheckBox mDelete = (CheckBox) mView.findViewById(R.id.delete_location_checkbox);
         builder.setView(mView)
                 // Add action buttons

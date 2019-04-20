@@ -59,3 +59,7 @@ The current values of radius and update rate are displayed when the alert dialog
 ### Version 1.0.11 (4/19/2019)
 
 Previously selected locations and their radius circles are displayed on the map when "Add New Location" is selected.
+
+### Version 1.0.12 (4/20/2019)
+
+Labels on the Alert Dialog
