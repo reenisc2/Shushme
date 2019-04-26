@@ -51,6 +51,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -327,9 +328,9 @@ public class MainActivity extends AppCompatActivity implements
                         getContentResolver().update(uri, contentValues, null, null);
                     }
                 }
-            } else {
+            } //else {
                 restoreRinger();
-            }
+            //}
             
             // Get live data information
             refreshPlacesData();
@@ -460,6 +461,7 @@ public class MainActivity extends AppCompatActivity implements
         Context context = getApplicationContext();
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        GeofenceBroadcastReceiver.sendNotification(context, Geofence.GEOFENCE_TRANSITION_EXIT);
     }
 
     /**
