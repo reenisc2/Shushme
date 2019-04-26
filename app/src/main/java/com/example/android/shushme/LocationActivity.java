@@ -60,6 +60,7 @@ public class LocationActivity extends AppCompatActivity
     private ArrayList mNewPoiRads = new ArrayList<>();
     private ArrayList mNew = new ArrayList<>();
     private List<Centers> mCenters = new ArrayList<>();
+    private boolean mDraggingMarker = false;
 
     public LocationActivity() {
     }
@@ -175,10 +176,14 @@ public class LocationActivity extends AppCompatActivity
 
     @Override
     public void onMarkerDragStart(Marker marker) {
+        mDraggingMarker = true;
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
+        mNewPos = marker.getPosition();
+        mNewRad = calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
+        updateRadiusAndCircle();
     }
 
 /*
@@ -194,6 +199,7 @@ public class LocationActivity extends AppCompatActivity
         Log.d(TAG, "onMarkerDragEnd " + mNewPos.latitude + ", " + mNewPos.longitude);
         mNewRad = calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
         updateRadiusAndCircle();
+        mDraggingMarker = false;
     }
 
     @Override

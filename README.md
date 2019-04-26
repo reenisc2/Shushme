@@ -67,3 +67,13 @@ Labels on the Alert Dialog
 ### Version 1.0.13 (4/20/2019)
 
 Make the back arrow work.
+
+### Version 1.0.14 (4/25/2019)
+
+WIP. Use a second marker for resizing the circles.
+
+### version 1.0.15 (4/26/2019)
+
+One main page, only 1 decimal place for radius.
+Resize circle while dragging marker.
+Some clean up.
