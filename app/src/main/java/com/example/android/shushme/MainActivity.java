@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements
             mapDetailIntent.putExtra(Constants.PLACE_COUNT, count);
             for (int i = 0; i < count; i++) {
                 LocationObj l = currentPlaces.get(i);
+                mapDetailIntent.putExtra(Constants.PID + i, l.getPlace().getId());
                 mapDetailIntent.putExtra(Constants.LAT_LNG + i, l.getLatLng());
                 mapDetailIntent.putExtra(Constants.RAD + i, l.getRadius());
             }
@@ -297,17 +298,34 @@ public class MainActivity extends AppCompatActivity implements
 
                 //String placeID = data.getStringExtra("placeId");
                 java.util.ArrayList<String> placeIDs = data.getStringArrayListExtra("PlaceIds");
+                float[] rads = data.getFloatArrayExtra("Rads");
+                boolean[] newPoi = data.getBooleanArrayExtra("News");
+                List oldList = mAdapter.getPlaces();
                 Log.i(TAG, "Data Not Null!");
 
                 // Insert a new place into DB
-                for (String id : placeIDs) {
+                for (int i = 0; i < placeIDs.size(); i++) {
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, id);
-                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS,
-                            ShushmePreferences.getRadius(getApplicationContext()));
+                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeIDs.get(i));
+                    contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, rads[i]);
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE,
                             ShushmePreferences.getNotifications(getApplicationContext()));
-                    getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
+                    if (newPoi[i]) {
+                        getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
+                    } else {
+                        String sIdx = "";
+                        for (int j = 0; j < oldList.size(); j++) {
+                            LocationObj lo = (LocationObj)oldList.get(j);
+                            if (lo.getId().equals(placeIDs.get(i))) {
+                                sIdx = String.valueOf(lo.getTableIdx());
+                                break;
+                            }
+                        }
+                        Uri uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
+                                .appendPath(PlaceContract.PATH_PLACES)
+                                .appendPath(sIdx).build();
+                        getContentResolver().update(uri, contentValues, null, null);
+                    }
                 }
             } else {
                 restoreRinger();

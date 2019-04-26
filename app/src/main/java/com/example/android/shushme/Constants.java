@@ -37,6 +37,7 @@ public final class Constants {
     public static final String PLACE_COUNT = "placeCount";
     public static final String LAT_LNG = "latng_";
     public static final String RAD = "rad_";
+    public static final String PID = "pid_";
 
 }
 
