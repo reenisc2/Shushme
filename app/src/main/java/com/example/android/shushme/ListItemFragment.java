@@ -34,7 +34,7 @@ public class ListItemFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View mView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_listitem, null);
         final EditText mRadius = (EditText) mView.findViewById(R.id.radius);
-        mRadius.setText(String.valueOf(getArguments().getFloat("radius", 100)));
+        mRadius.setText(String.format("%.1f", getArguments().getFloat("radius", 100)));
         final EditText mUpdate = (EditText) mView.findViewById(R.id.location_updates);
         mUpdate.setText(String.valueOf(getArguments().getInt("updates", 300)));
         final TextView mName = (TextView) mView.findViewById(R.id.modify_location);
