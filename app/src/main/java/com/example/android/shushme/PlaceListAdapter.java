@@ -78,7 +78,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
-        holder.radiusTextView.setText(String.valueOf(mPlaces.get(position).getRadius()));
+        holder.radiusTextView.setText(String.format("%.1f", mPlaces.get(position).getRadius()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
