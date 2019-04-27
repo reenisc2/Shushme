@@ -376,14 +376,17 @@ public class MainActivity extends AppCompatActivity implements
                 PERMISSIONS_REQUEST_FINE_LOCATION);
     }
 
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.shushme, menu);
         return true;
     }
+*/
 
 
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -400,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+*/
 
     public void showListItemDialog() {
         DialogFragment dialog = new ListItemFragment();
