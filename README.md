@@ -72,8 +72,18 @@ Make the back arrow work.
 
 WIP. Use a second marker for resizing the circles.
 
-### version 1.0.15 (4/26/2019)
+### Version 1.0.15 (4/26/2019)
 
 One main page, only 1 decimal place for radius.
 Resize circle while dragging marker.
 Some clean up.
+
+### Version 1.0.16 (4/26/2019)
+
+First pass at removing the preferences/settings menu.
+
+### Version 1.0.17 (4/29/2019)
+
+Put resizing marker on circle when Point of Interest initially selected.
+Remove ability to make radius larger and put up draggable marker with short click.
+Some more clean up.

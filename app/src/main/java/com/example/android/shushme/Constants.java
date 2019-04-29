@@ -39,5 +39,9 @@ public final class Constants {
     public static final String RAD = "rad_";
     public static final String PID = "pid_";
 
+    // initial bearing for radius marker when POI clicked - degrees clockwise from North
+    public static final double INITIAL_BEARING = 0.0;
+    public static final double EARTH_RADIUS_METERS = 6378 * 1000;
+
 }
 

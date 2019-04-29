@@ -125,7 +125,7 @@ public class Geofencing implements ResultCallback {
             Log.i(TAG, placeUID);
             // float radius = ShushmePreferences.getRadius(mContext);
             float radius = place.getRadius();
-            int responsiveness = ShushmePreferences.getNotifications(mContext) * MILLISEC_MULTIPLIER;
+            int responsiveness = Integer.parseInt(Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT);
 
             // Build a Geofence object
             Geofence geofence = new Geofence.Builder()

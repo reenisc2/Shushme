@@ -36,19 +36,15 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LocationActivity extends AppCompatActivity
     implements OnMapReadyCallback,
         OnMyLocationButtonClickListener,
         OnMyLocationClickListener,
-        // GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener,
-        GoogleMap.OnMapClickListener,
-        // GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnPoiClickListener,
-        GoogleMap.OnCircleClickListener {
+        // GoogleMap.OnMapClickListener,
+        GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
     private LatLng mNewPos = Constants.HOME;
@@ -102,19 +98,28 @@ public class LocationActivity extends AppCompatActivity
         mMap.setOnMyLocationClickListener(this);
         // mMap.setOnMarkerClickListener(this);
         mMap.setOnMarkerDragListener(this);
-        mMap.setOnMapClickListener(this);
+        // mMap.setOnMapClickListener(this);
         // mMap.setOnMapLongClickListener(this);
         mMap.setOnPoiClickListener(this);
         enableMyLocation();
         if (mCenters != null && mCenters.size() > 0) {
             for (int i = 0; i < mCenters.size(); i++) {
-                float radius = mCenters.get(i).getRad();
-                CircleOptions circleOptions = new CircleOptions().center(mCenters.get(i).getLatLng()).radius(radius).strokeColor(0xffff0000).strokeWidth(4);
+                mNewRad = mCenters.get(i).getRad();
+                CircleOptions circleOptions = new CircleOptions().center(mCenters.get(i).getLatLng()).radius(mNewRad).strokeColor(0xffff0000).strokeWidth(4);
                 mMap.addMarker(new MarkerOptions().position(mCenters.get(i).getLatLng()));
                 Circle c = mMap.addCircle(circleOptions);
+                c.setClickable(true);
                 mCenters.get(i).setCircle(c);
+                mNearestCenter = i;
+                placeMarker(Utils.calculateMarkerPos(mCenters.get(i).getLatLng(), mNewRad));
             }
         }
+/*        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+            @Override
+            public void onCircleClick(Circle circle) {
+                Log.i(TAG, "Circle clicked! ");
+            }
+        });*/
     }
 
     @Override
@@ -126,95 +131,63 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Log.d(TAG, "onMyLocationClick");
-/*        mNewPos =  new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.clear();
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(mNewPos));
-        mMap.addMarker(new MarkerOptions().position(mNewPos).draggable(true));
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID);
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.builder(placeFields).build();
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<FindCurrentPlaceResponse> placeResponse = Places.createClient(this).findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    FindCurrentPlaceResponse response = task.getResult();
-                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %f; PlaceID: %s",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood(),
-                                placeLikelihood.getPlace().getId()));
-                    }
-                } else {
-                    Exception exception = task.getException();
-                    if (exception instanceof ApiException) {
-                        ApiException apiException = (ApiException) exception;
-                        Log.e(TAG, "Place not found: " + apiException.getStatusCode());
-                    }
-                }
-            });
-        }*/
     }
 
     @Override
     public void onPoiClick(PointOfInterest poi) {
         if (duplicateSelection(poi)) return;
-        float radius = ShushmePreferences.getRadius(this);
-        Log.i(TAG, "fetched radius: " + radius);
-        CircleOptions circleOptions = new CircleOptions().center(poi.latLng).radius(radius).strokeColor(0xffff0000).strokeWidth(4).clickable(true);
+        mNewRad = Float.parseFloat(Constants.GEOFENCE_RADIUS_DEFAULT);
+        Log.i(TAG, "fetched radius: " + mNewRad);
+        CircleOptions circleOptions = new CircleOptions().center(poi.latLng).radius(mNewRad).strokeColor(0xffff0000).strokeWidth(4).clickable(true);
         mMap.addMarker(new MarkerOptions().position(poi.latLng));
         Circle c = mMap.addCircle(circleOptions);
         mNewPos = poi.latLng;
-        mCenters.add(new Centers(poi.placeId, poi.latLng, radius, c));
+        mCenters.add(new Centers(poi.placeId, poi.latLng, mNewRad, c));
         mPoi.add(poi.placeId);
-        mNewPoiRads.add(radius);
+        mNewPoiRads.add(mNewRad);
         mNew.add(true);
+        mNearestCenter = mCenters.size() -1;
+        LatLng initialMarkerPos = Utils.calculateMarkerPos(mNewPos, mNewRad);
+        placeMarker(initialMarkerPos);
         Log.i(TAG, "onPoiClick: " + poi.placeId);
-    }
-
-    public void onCircleClick(Circle circle) {
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-        mDraggingMarker = true;
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
         mNewPos = marker.getPosition();
-        mNewRad = calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
+        mNewRad = Utils.calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
         updateRadiusAndCircle();
     }
 
-/*
     @Override
-    public boolean onMarkerClick(Marker marker) {
-        return true;
+    public void onMarkerDragStart(Marker marker) {
+        for (int i = 0; i < mCenters.size(); i++) {
+            if (mCenters.get(i).getMarker().equals(marker)) {
+                mNearestCenter = i;
+                break;
+            }
+        }
+        mDraggingMarker = true;
     }
-*/
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
         mNewPos = marker.getPosition();
         Log.d(TAG, "onMarkerDragEnd " + mNewPos.latitude + ", " + mNewPos.longitude);
-        mNewRad = calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
+        mNewRad = Utils.calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
         updateRadiusAndCircle();
         mDraggingMarker = false;
     }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
-        Log.d(TAG, "onMapClick");
-        findNearestCenter(latLng);
-        if (mNearestCenter == -1) {
-            Log.d(TAG, "No nearest center found");
-            return;
-        }
+    private void placeMarker(LatLng latLng) {
+        Log.i(TAG, "In placeMarker  " + mNearestCenter);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         markerOptions.title("Radius marker");
+        markerOptions.snippet("Drag marker to resize geofence circle.");
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         if (mCenters.get(mNearestCenter).hasMarker()) {
+            Log.i(TAG, "Nearest center has marker, so remove it");
             mCenters.get(mNearestCenter).getMarker().remove();
         }
         Marker m = mMap.addMarker(markerOptions);
@@ -224,8 +197,6 @@ public class LocationActivity extends AppCompatActivity
         }
         Log.i(TAG, "index to nearest center: " + mNearestCenter);
         updateRadiusAndCircle();
-
-        int instance = mLocationProvider.getInstanceId();
     }
 
 /*
@@ -301,35 +272,6 @@ public class LocationActivity extends AppCompatActivity
         finish();
     }
 
-    private void findNearestCenter(LatLng point) {
-        if (mCenters.isEmpty()) {
-            Log.i(TAG, "latLngs is empty");
-            mNearestCenter = -1;
-        }
-        mNearestCenter = 0;
-        mNewRad = calculateRadius(point, mCenters.get(0).getLatLng());
-        if (mCenters.size() == 1) {
-            return;
-        }
-        for (int idx = 1; idx < mCenters.size(); idx++) {
-            float newDistance = calculateRadius(point, mCenters.get(idx).getLatLng());
-            if (newDistance < mNewRad) {
-                mNewRad = newDistance;
-                mNearestCenter = idx;
-            }
-        }
-    }
-
-    private float calculateRadius(LatLng l1, LatLng l2) {
-        Location newPoint = new Location("point");
-        newPoint.setLatitude(l1.latitude);
-        newPoint.setLongitude(l1.longitude);
-        Location center = new Location("center");
-        center.setLatitude(l2.latitude);
-        center.setLongitude(l2.longitude);
-        return newPoint.distanceTo(center);
-    }
-
     private int getChangedLocationsCount() {
         Log.i(TAG, "getChangedLocationsCount, mCenters.size is " + mCenters.size());
         if (mCenters.size() == 0) return 0;
@@ -396,7 +338,7 @@ public class LocationActivity extends AppCompatActivity
 
     }
 
-    private class Centers {
+/*    private class Centers {
         private LatLng mLatLng = null;
         private float mRad = 0;
         private Circle mCircle = null;
@@ -471,5 +413,5 @@ public class LocationActivity extends AppCompatActivity
         private String getPid() {
             return mPid;
         }
-    }
+    }*/
 }

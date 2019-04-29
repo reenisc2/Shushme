@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeIDs.get(i));
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, rads[i]);
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE,
-                            ShushmePreferences.getNotifications(getApplicationContext()));
+                            Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT);
                     if (newPoi[i]) {
                         getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
                     } else {
