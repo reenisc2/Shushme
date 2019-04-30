@@ -11,6 +11,7 @@ public class Centers {
     private Marker mMarker = null;
     private String mPid = null;
     private boolean hasChanged = false;
+    private boolean newlyAdded = false;
 
     public Centers () {
     }
@@ -78,4 +79,10 @@ public class Centers {
     public String getPid() {
         return mPid;
     }
+
+    public void setHasChanged() { hasChanged = true; }
+
+    public void setNewlyAdded() { newlyAdded = true; }
+
+    public boolean isNewlyAdded() { return newlyAdded; }
 }

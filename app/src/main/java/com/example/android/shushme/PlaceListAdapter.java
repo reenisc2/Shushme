@@ -75,7 +75,7 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
         String placeName = mPlaces.get(position).getName();
         String placeAddress = mPlaces.get(position).getAddress();
-        Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
+        // Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
         holder.radiusTextView.setText(String.format("%.1f", mPlaces.get(position).getRadius()));
@@ -95,7 +95,6 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         boolean needToRefresh = (newPlaces == null && mPlaces.size() > 0);
         mPlaces = newPlaces;
         if (mPlaces != null || needToRefresh) {
-            Log.i(TAG, "in swapPlaces, mPlaces not null or needToRefresh" );
             // Force the RecyclerView to refresh
             this.notifyDataSetChanged();
             ///this.notifyItemRangeChanged(0, mPlaces.size());

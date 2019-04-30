@@ -36,9 +36,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -127,12 +124,10 @@ public class MainActivity extends AppCompatActivity implements
                 editor.commit();
                 if (isChecked) {
                     mGeofencing.registerAllGeofences();
-                    Log.i(TAG, "Is checked");
                 }
                 else  {
                     mGeofencing.unRegisterAllGeofences();
                     restoreRinger();
-                    Log.i(TAG, "Is unchecked");
                 }
             }
 
@@ -185,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void refreshPlacesData() {
-        Log.i(TAG, "New refreshPlacesData()");
         Uri uri = PlaceContract.PlaceEntry.CONTENT_URI;
         Cursor data = getContentResolver().query(
                 uri,
@@ -203,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements
             float rad = data.getFloat(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_RADIUS));
             int update = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_UPDATE));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
-            Log.i(TAG, request.getPlaceId());
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
                 places.add(new LocationObj(place, rad, mId, update));
@@ -214,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements
                     mGeofencing.registerAllGeofences();
                 }
             }).addOnFailureListener((exception) -> {
-                Log.i(TAG, "addOnFailureListener");
                 if (exception instanceof ApiException) {
                     Log.e(TAG, "Place not found:" + exception.getMessage());
                 }
@@ -287,13 +279,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
         if ((requestCode == PLACE_PICKER_REQUEST || requestCode == SETTINGS_REQUEST)
                 && resultCode == RESULT_OK) {
 
             if (requestCode == PLACE_PICKER_REQUEST) {
                 if (data == null) {
-                    Log.i(TAG, "No place selected");
                     return;
                 }
 
@@ -302,7 +292,6 @@ public class MainActivity extends AppCompatActivity implements
                 float[] rads = data.getFloatArrayExtra("Rads");
                 boolean[] newPoi = data.getBooleanArrayExtra("News");
                 List oldList = mAdapter.getPlaces();
-                Log.i(TAG, "Data Not Null!");
 
                 // Insert a new place into DB
                 for (int i = 0; i < placeIDs.size(); i++) {
@@ -340,7 +329,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume");
 
         // Initialize location permissions checkbox
         CheckBox locationPermissions = findViewById(R.id.location_permission_checkbox);
@@ -376,35 +364,6 @@ public class MainActivity extends AppCompatActivity implements
                 PERMISSIONS_REQUEST_FINE_LOCATION);
     }
 
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.shushme, menu);
-        return true;
-    }
-*/
-
-
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_REQUEST);
-            return true;
-        }
-
-        if (id == R.id.action_permissions) {
-            Log.i(TAG, "selected permissions!--");
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-*/
-
     public void showListItemDialog() {
         DialogFragment dialog = new ListItemFragment();
         dialog.show(getSupportFragmentManager(), "ListItemFragment");
@@ -412,10 +371,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onDialogPositiveClick(float rad, Integer upd, Boolean checked) {
-        Log.i(TAG, "onDialogPositiveClick()");
-        Log.i(TAG, mCurrentItemPosition + "   " + rad + "   " + upd + "   " + checked);
         LocationObj lo = mAdapter.getItem(mCurrentItemPosition);
-        Log.i(TAG, lo.getName());
         if (checked) {
             deleteLocation(lo.getTableIdx(), mAdapter.getItemCount() == 1);
         } else {
@@ -425,7 +381,6 @@ public class MainActivity extends AppCompatActivity implements
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, lo.getId());
                 float newRad = rad > 0 ? rad : lo.getRadius();
                 int newUpd = upd > 0 ? upd : lo.getUpdateLocation();
-                Log.i(TAG, "udate rate value to be assigned: " + newUpd);
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, newRad);
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE, newUpd);
                 String sIdx = String.valueOf(lo.getTableIdx());

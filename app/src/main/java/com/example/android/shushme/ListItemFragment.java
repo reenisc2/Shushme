@@ -25,7 +25,6 @@ public class ListItemFragment extends DialogFragment {
         args.putInt("updates", update_rate);
         args.putString("name", name);
         f.setArguments(args);
-        Log.i(TAG, "In factory " + f.getArguments().toString());
         return f;
     }
 
@@ -45,14 +44,12 @@ public class ListItemFragment extends DialogFragment {
         .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                Log.i(TAG, "Clicked save");
                 dialog.dismiss();
                 String s = mRadius.getText().toString();
                 float rad = s.isEmpty() ? -1 : Float.valueOf(s);
                 s = mUpdate.getText().toString();
                 Integer upd = s.isEmpty() ? -1 : Integer.valueOf(s);
                 Boolean checked = mDelete.isChecked();
-                Log.i(TAG, rad + "   " + upd + "   " + checked);
                 listener.onDialogPositiveClick(rad, upd, checked);
             }
         })

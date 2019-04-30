@@ -1,11 +1,9 @@
 package com.example.android.shushme;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -28,12 +26,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +35,6 @@ public class LocationActivity extends AppCompatActivity
         OnMyLocationButtonClickListener,
         OnMyLocationClickListener,
         GoogleMap.OnMarkerDragListener,
-        // GoogleMap.OnMapClickListener,
         GoogleMap.OnPoiClickListener {
 
     private GoogleMap mMap;
@@ -52,11 +43,9 @@ public class LocationActivity extends AppCompatActivity
     private float mNewRad = 0;
     private static final String TAG = LocationActivity.class.getSimpleName();
     private FusedLocationProviderClient mLocationProvider;
-    private ArrayList<String> mPoi = new ArrayList<>();
-    private ArrayList mNewPoiRads = new ArrayList<>();
-    private ArrayList mNew = new ArrayList<>();
     private List<Centers> mCenters = new ArrayList<>();
     private boolean mDraggingMarker = false;
+    private int newLocationsAdded = 0;
 
     public LocationActivity() {
     }
@@ -96,10 +85,7 @@ public class LocationActivity extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(target));
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-        // mMap.setOnMarkerClickListener(this);
         mMap.setOnMarkerDragListener(this);
-        // mMap.setOnMapClickListener(this);
-        // mMap.setOnMapLongClickListener(this);
         mMap.setOnPoiClickListener(this);
         enableMyLocation();
         if (mCenters != null && mCenters.size() > 0) {
@@ -108,18 +94,11 @@ public class LocationActivity extends AppCompatActivity
                 CircleOptions circleOptions = new CircleOptions().center(mCenters.get(i).getLatLng()).radius(mNewRad).strokeColor(0xffff0000).strokeWidth(4);
                 mMap.addMarker(new MarkerOptions().position(mCenters.get(i).getLatLng()));
                 Circle c = mMap.addCircle(circleOptions);
-                c.setClickable(true);
                 mCenters.get(i).setCircle(c);
                 mNearestCenter = i;
                 placeMarker(Utils.calculateMarkerPos(mCenters.get(i).getLatLng(), mNewRad));
             }
         }
-/*        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
-            @Override
-            public void onCircleClick(Circle circle) {
-                Log.i(TAG, "Circle clicked! ");
-            }
-        });*/
     }
 
     @Override
@@ -137,19 +116,16 @@ public class LocationActivity extends AppCompatActivity
     public void onPoiClick(PointOfInterest poi) {
         if (duplicateSelection(poi)) return;
         mNewRad = Float.parseFloat(Constants.GEOFENCE_RADIUS_DEFAULT);
-        Log.i(TAG, "fetched radius: " + mNewRad);
         CircleOptions circleOptions = new CircleOptions().center(poi.latLng).radius(mNewRad).strokeColor(0xffff0000).strokeWidth(4).clickable(true);
         mMap.addMarker(new MarkerOptions().position(poi.latLng));
         Circle c = mMap.addCircle(circleOptions);
         mNewPos = poi.latLng;
         mCenters.add(new Centers(poi.placeId, poi.latLng, mNewRad, c));
-        mPoi.add(poi.placeId);
-        mNewPoiRads.add(mNewRad);
-        mNew.add(true);
-        mNearestCenter = mCenters.size() -1;
+        mNearestCenter = mCenters.size() - 1;
+        mCenters.get(mNearestCenter).setNewlyAdded();
         LatLng initialMarkerPos = Utils.calculateMarkerPos(mNewPos, mNewRad);
         placeMarker(initialMarkerPos);
-        Log.i(TAG, "onPoiClick: " + poi.placeId);
+        newLocationsAdded++;
     }
 
     @Override
@@ -175,30 +151,24 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public void onMarkerDragEnd(Marker marker) {
         mNewPos = marker.getPosition();
-        Log.d(TAG, "onMarkerDragEnd " + mNewPos.latitude + ", " + mNewPos.longitude);
         mNewRad = Utils.calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
         updateRadiusAndCircle();
         mDraggingMarker = false;
+        mCenters.get(mNearestCenter).setHasChanged();
     }
 
     private void placeMarker(LatLng latLng) {
-        Log.i(TAG, "In placeMarker  " + mNearestCenter);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         markerOptions.title(String.format("Radius: %.1f", mNewRad));
         markerOptions.snippet("Drag marker to resize geofence circle.");
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         if (mCenters.get(mNearestCenter).hasMarker()) {
-            Log.i(TAG, "Nearest center has marker, so remove it");
             mCenters.get(mNearestCenter).getMarker().remove();
         }
         Marker m = mMap.addMarker(markerOptions);
         m.showInfoWindow();
         mCenters.get(mNearestCenter).setMarker(m);
-        if (mPoi.contains(mCenters.get(mNearestCenter).getPid())) {
-            mNewPoiRads.set(mPoi.indexOf((Object) mCenters.get(mNearestCenter).getPid()), mNewRad);
-        }
-        Log.i(TAG, "index to nearest center: " + mNearestCenter);
         updateRadiusAndCircle();
     }
 
@@ -217,13 +187,11 @@ public class LocationActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
         backAction();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        Log.d(TAG, "onSupportNavigateUp");
         backAction();
         return true;
     }
@@ -240,19 +208,15 @@ public class LocationActivity extends AppCompatActivity
     private void backAction() {
         Intent resultIntent = new Intent();
         int changed = getChangedLocationsCount();
-        if (mPoi == null && changed == 0) {
-            Log.i(TAG, "In back action, nothing to send back");
+        if (newLocationsAdded == 0 && changed == 0) {
             setResult(RESULT_OK);
         }
-        Log.i(TAG, "in backAction, changed is: " + changed);
-        if (changed > 0) {
-            updatePlaceIdList();
-        }
-        if (mPoi != null) {
+        ReturnLists returnLists = updatePlaceIdList();
+        if (returnLists.mPoi != null) {
             Bundle bundle = new Bundle();
-            bundle.putStringArrayList("PlaceIds", mPoi);
-            bundle.putFloatArray("Rads", convertFloatList());
-            bundle.putBooleanArray("News", convertBoolList());
+            bundle.putStringArrayList("PlaceIds", returnLists.mPoi);
+            bundle.putFloatArray("Rads", convertFloatList(returnLists.mNewPoiRads));
+            bundle.putBooleanArray("News", convertBoolList(returnLists.mNew));
             resultIntent.putExtras(bundle);
             setResult(RESULT_OK, resultIntent);
         } else {
@@ -261,42 +225,56 @@ public class LocationActivity extends AppCompatActivity
         finish();
     }
 
+
     private int getChangedLocationsCount() {
-        Log.i(TAG, "getChangedLocationsCount, mCenters.size is " + mCenters.size());
         if (mCenters.size() == 0) return 0;
         int count = 0;
         for (int i = 0; i < mCenters.size(); i++) {
-            Log.i(TAG, "in getChangedLocationsCount  " + i + "  " + mCenters.get(i).hasChanged());
-            if (mCenters.get(i).hasChanged()) count += 1;
+            if (!mCenters.get(i).isNewlyAdded() && mCenters.get(i).hasChanged()) {
+                count += 1;
+            }
         }
         return count;
     }
+    private class ReturnLists {
+        public ArrayList<String> mPoi;
+        public ArrayList mNewPoiRads;
+        public ArrayList mNew;
 
-    private void updatePlaceIdList() {
-        Log.i(TAG, "updatePlaceList sizes are: " + mCenters.size());
-        for (int i = 0; i < mCenters.size(); i++) {
-            Log.i(TAG, "does it contain the id? " + mPoi.contains(mCenters.get(i).getPid()));
-            if (mPoi.isEmpty() || !(mPoi.contains(mCenters.get(i).getPid()))) {
-                mPoi.add(mCenters.get(i).getPid());
-                mNewPoiRads.add(mCenters.get(i).getRad());
-                mNew.add(false);
-            }
+        private ReturnLists(ArrayList<String> mPoi, ArrayList newRads, ArrayList news) {
+            this.mPoi = mPoi;
+            this.mNewPoiRads = newRads;
+            this.mNew = news;
         }
     }
 
-    private float[] convertFloatList() {
-        float[] floatArray = new float[mNewPoiRads.size()];
+    private ReturnLists updatePlaceIdList() {
+        ArrayList<String> mPoi = new ArrayList<>();
+        ArrayList mNewPoiRads = new ArrayList<>();
+        ArrayList mNew = new ArrayList<>();
+        for (int i = 0; i < mCenters.size(); i++) {
+            if (mCenters.get(i).hasChanged() || mCenters.get(i).isNewlyAdded()) {
+                mPoi.add(mCenters.get(i).getPid());
+                mNewPoiRads.add(mCenters.get(i).getRad());
+                mNew.add(mCenters.get(i).isNewlyAdded());
+            }
+        }
+        return new ReturnLists(mPoi, mNewPoiRads, mNew);
+    }
 
-        for (int i = 0; i < mNewPoiRads.size(); i++) {
-            floatArray[i] = (float) mNewPoiRads.get(i);
+    private float[] convertFloatList(ArrayList newRads) {
+        float[] floatArray = new float[newRads.size()];
+
+        for (int i = 0; i < newRads.size(); i++) {
+            floatArray[i] = (float) newRads.get(i);
         }
         return floatArray;
     }
 
-    private boolean[] convertBoolList() {
-        boolean[] boolArray = new boolean[mNewPoiRads.size()];
-        for (int i = 0; i < mNewPoiRads.size(); i++) {
-            boolArray[i] = (boolean) mNew.get(i);
+    private boolean[] convertBoolList(ArrayList news) {
+        boolean[] boolArray = new boolean[news.size()];
+        for (int i = 0; i < news.size(); i++) {
+            boolArray[i] = (boolean) news.get(i);
         }
         return boolArray;
     }
@@ -304,7 +282,6 @@ public class LocationActivity extends AppCompatActivity
     private boolean duplicateSelection(PointOfInterest poi) {
         for (int i = 0; i < mCenters.size(); i++) {
             if (mCenters.get(i).getPid().equals(poi.placeId)) {
-                Log.i(TAG, "Duplicate Pid found");
                 return true;
             }
         }
@@ -315,7 +292,6 @@ public class LocationActivity extends AppCompatActivity
         mCenters.get(mNearestCenter).setRad(mNewRad);
         Circle existingCircle = mCenters.get(mNearestCenter).getCircle();
         if (existingCircle != null) {
-            Log.i(TAG, "Exisiting Circle not null");
             existingCircle.remove();
         }
         CircleOptions circleOptions = new CircleOptions()

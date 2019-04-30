@@ -70,7 +70,6 @@ public class Geofencing implements ResultCallback {
         // start with normal ringer mode, in case the ringer was off but the updated geofence puts
         // the device outside of the fence
         try {
-            Log.i(TAG, "Registering all the fences");
             LocationServices.GeofencingApi.addGeofences(
                     mGoogleApiClient,
                     getGeofencingRequest(),
@@ -94,7 +93,6 @@ public class Geofencing implements ResultCallback {
             return;
         }
         try {
-            Log.i(TAG, "Unregistering all the fences");
             LocationServices.GeofencingApi.removeGeofences(
                     mGoogleApiClient,
                     // This is the same pending intent that was used in registerGeofences
@@ -114,7 +112,6 @@ public class Geofencing implements ResultCallback {
      * @param places the PlaceBuffer result of the getPlaceById call
      */
     public void updateGeofencesList(List<LocationObj> places) {
-        Log.i(TAG, "update fence list");
         mGeofenceList = new ArrayList<>();
         if (places == null || places.size() == 0) return;
         for (LocationObj place : places) {
@@ -122,10 +119,8 @@ public class Geofencing implements ResultCallback {
             String placeUID = place.getId();
             double placeLat = place.getLatLng().latitude;
             double placeLng = place.getLatLng().longitude;
-            Log.i(TAG, placeUID);
-            // float radius = ShushmePreferences.getRadius(mContext);
             float radius = place.getRadius();
-            int responsiveness = Integer.parseInt(Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT);
+            int responsiveness = Integer.parseInt(Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT) * 1000; //convert to ms
 
             // Build a Geofence object
             Geofence geofence = new Geofence.Builder()

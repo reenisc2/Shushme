@@ -71,12 +71,10 @@ public class PlaceContentProvider extends ContentProvider {
      */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        Log.i(TAG, "Insert   " + uri.toString() + "   " + values);
         final SQLiteDatabase db = mPlaceDbHelper.getWritableDatabase();
 
         // Write URI matching code to identify the match for the places directory
         int match = sUriMatcher.match(uri);
-        Log.i(TAG, "insert match    " + match);
         Uri returnUri; // URI to be returned
         switch (match) {
             case PLACES:
@@ -158,7 +156,6 @@ public class PlaceContentProvider extends ContentProvider {
         final SQLiteDatabase db = mPlaceDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         // Keep track of the number of deleted places
-        Log.i(TAG, "match:   " + match);
         int placesDeleted; // starts as 0
         switch (match) {
             // Handle the single item case, recognized by the ID included in the URI path

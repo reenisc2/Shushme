@@ -21,7 +21,7 @@ public final class Constants {
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
     //public static final float GEOFENCE_RADIUS_IN_METERS = 1609; // 1 mile, 1.6 km
     public static final String GEOFENCE_RADIUS_DEFAULT = "100"; // 1 mile, 1.6 km
-    public static final String GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT = "300000"; // 1000ms * 60sec *5min
+    public static final String GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT = "300"; // 60sec *5min
 
     /**
      * Map for storing information about possible local fenced areas for shushme if that gets revived

@@ -55,10 +55,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
         // Check which transition type has triggered this event
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            Log.i(TAG, "--------------------------------Set to silent.-----------------------------------------------------");
             setRingerMode(context, AudioManager.RINGER_MODE_SILENT);
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            Log.i(TAG, "--------------------------------Resume ringer.-----------------------------------------------------");
             setRingerMode(context, AudioManager.RINGER_MODE_NORMAL);
         } else {
             // Log the error.
@@ -81,8 +79,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
      *                       or Geofence.GEOFENCE_TRANSITION_EXIT
      */
     public static void sendNotification(Context context, int transitionType) {
-        Log.i(TAG, "In sendNotification--------------------------------------------------------------------------");
-        // Create an explicit content Intent that starts the main Activity.
+         // Create an explicit content Intent that starts the main Activity.
         Intent notificationIntent = new Intent(context, MainActivity.class);
 
         // Construct a task stack.
@@ -126,7 +123,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Issue the notification
-        Log.i(TAG, "--------------------------------------Sending notification --------------------------------------");
         mNotificationManager.notify(0, builder.build());
     }
 
