@@ -156,6 +156,8 @@ public class LocationActivity extends AppCompatActivity
     public void onMarkerDrag(Marker marker) {
         mNewPos = marker.getPosition();
         mNewRad = Utils.calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
+        marker.setTitle(String.format("Radius: %.1f", mNewRad));
+        marker.showInfoWindow();
         updateRadiusAndCircle();
     }
 
@@ -183,7 +185,7 @@ public class LocationActivity extends AppCompatActivity
         Log.i(TAG, "In placeMarker  " + mNearestCenter);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        markerOptions.title("Radius marker");
+        markerOptions.title(String.format("Radius: %.1f", mNewRad));
         markerOptions.snippet("Drag marker to resize geofence circle.");
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         if (mCenters.get(mNearestCenter).hasMarker()) {
@@ -191,6 +193,7 @@ public class LocationActivity extends AppCompatActivity
             mCenters.get(mNearestCenter).getMarker().remove();
         }
         Marker m = mMap.addMarker(markerOptions);
+        m.showInfoWindow();
         mCenters.get(mNearestCenter).setMarker(m);
         if (mPoi.contains(mCenters.get(mNearestCenter).getPid())) {
             mNewPoiRads.set(mPoi.indexOf((Object) mCenters.get(mNearestCenter).getPid()), mNewRad);
@@ -198,20 +201,6 @@ public class LocationActivity extends AppCompatActivity
         Log.i(TAG, "index to nearest center: " + mNearestCenter);
         updateRadiusAndCircle();
     }
-
-/*
-    @Override
-    public void onMapLongClick (LatLng latLng) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("New marker - long click");
-        mMap.clear();
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.addMarker(markerOptions);
-        mNewPos = latLng;
-        Log.d(TAG, "onMapLongClick");
-    }
-*/
 
     @Override
     public void onDestroy() {
@@ -335,83 +324,5 @@ public class LocationActivity extends AppCompatActivity
                 .strokeColor(0xffff0000).strokeWidth(4).clickable(true);
         Circle c = mMap.addCircle(circleOptions);
         mCenters.get(mNearestCenter).setCircle(c);
-
     }
-
-/*    private class Centers {
-        private LatLng mLatLng = null;
-        private float mRad = 0;
-        private Circle mCircle = null;
-        private Marker mMarker = null;
-        private String mPid = null;
-        private boolean hasChanged = false;
-
-
-        private Centers () {
-        }
-
-        private Centers (String pId, LatLng latLng) {
-            mPid = pId;
-            mLatLng = latLng;
-
-        }
-
-        private Centers (String pId, LatLng latLng, float rad) {
-            mPid = pId;
-            mLatLng = latLng;
-            mRad = rad;
-        }
-
-        private Centers (String pId, LatLng latLng, float rad, Circle circle) {
-            mPid = pId;
-            mLatLng = latLng;
-            mRad = rad;
-            mCircle = circle;
-        }
-
-        private void setLatLng(LatLng v) {
-            mLatLng = v;
-        }
-
-        private LatLng getLatLng() {
-            return mLatLng;
-        }
-
-        private void setRad(float rad) {
-            mRad = rad;
-            hasChanged = true;
-        }
-
-        private float getRad() {
-            return mRad;
-        }
-
-        private void setCircle(Circle circle) {
-            mCircle = circle;
-        }
-
-        private Circle getCircle() {
-            return mCircle;
-        }
-
-        private void setMarker(Marker marker) {
-            mMarker = marker;
-        }
-
-        private boolean hasMarker() {
-            return mMarker != null;
-        }
-
-        private Marker getMarker() {
-            return mMarker;
-        }
-
-        private boolean hasChanged() {
-            return hasChanged;
-        }
-
-        private String getPid() {
-            return mPid;
-        }
-    }*/
 }
