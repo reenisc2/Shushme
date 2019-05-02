@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.libraries.places.api.model.Place;
 
@@ -75,7 +76,9 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
         String placeName = mPlaces.get(position).getName();
         String placeAddress = mPlaces.get(position).getAddress();
-        // Log.i(TAG, "onBindViewHolder Name: " + placeName + " address: " + placeAddress);
+        if (!mPlaces.get(position).getEnabled()) {
+            holder.placeAccent.setImageResource(R.drawable.ic_place_disabled_24dp);
+        }
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
         holder.radiusTextView.setText(String.format("%.1f", mPlaces.get(position).getRadius()));
@@ -145,9 +148,11 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         TextView nameTextView;
         TextView addressTextView;
         TextView radiusTextView;
+        ImageView placeAccent;
 
         PlaceViewHolder(View itemView) {
             super(itemView);
+            placeAccent = itemView.findViewById(R.id.place_accent);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             addressTextView = itemView.findViewById(R.id.address_text_view);
             radiusTextView = itemView.findViewById(R.id.radius_text_view);

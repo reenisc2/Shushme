@@ -17,13 +17,14 @@ import android.widget.TextView;
 public class ListItemFragment extends DialogFragment {
     private static final String TAG = ListItemFragment.class.getSimpleName();
 
-    public static ListItemFragment newInstance(float radius, int update_rate, String name) {
+    public static ListItemFragment newInstance(float radius, int update_rate, String name, boolean enabled) {
         ListItemFragment f = new ListItemFragment();
 
         Bundle args = new Bundle();
         args.putFloat("radius", radius);
         args.putInt("updates", update_rate);
         args.putString("name", name);
+        args.putBoolean("enabled", enabled);
         f.setArguments(args);
         return f;
     }
@@ -38,6 +39,8 @@ public class ListItemFragment extends DialogFragment {
         mUpdate.setText(String.valueOf(getArguments().getInt("updates", 300)));
         final TextView mName = (TextView) mView.findViewById(R.id.modify_location);
         mName.setText(getArguments().getString("name", "Modify Location"));
+        final CheckBox mDisable = (CheckBox) mView.findViewById(R.id.disable_checkbox);
+        mDisable.setChecked(!getArguments().getBoolean("enabled", true));
         final CheckBox mDelete = (CheckBox) mView.findViewById(R.id.delete_location_checkbox);
         builder.setView(mView)
                 // Add action buttons
@@ -49,8 +52,9 @@ public class ListItemFragment extends DialogFragment {
                 float rad = s.isEmpty() ? -1 : Float.valueOf(s);
                 s = mUpdate.getText().toString();
                 Integer upd = s.isEmpty() ? -1 : Integer.valueOf(s);
-                Boolean checked = mDelete.isChecked();
-                listener.onDialogPositiveClick(rad, upd, checked);
+                Boolean disableChecked = mDisable.isChecked();
+                Boolean deleteChecked = mDelete.isChecked();
+                listener.onDialogPositiveClick(rad, upd, disableChecked, deleteChecked);
             }
         })
          .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -68,7 +72,7 @@ public class ListItemFragment extends DialogFragment {
      * Each method passes the DialogFragment in case the host neds to query it.
      */
     public interface ListItemListener {
-        public void onDialogPositiveClick(float radius, Integer updates, Boolean cheked);
+        public void onDialogPositiveClick(float radius, Integer updates, Boolean disableChecked, Boolean deleteChecked);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 

@@ -74,7 +74,7 @@ WIP. Use a second marker for resizing the circles.
 
 ### Version 1.0.15 (4/26/2019)
 
-One main page, only 1 decimal place for radius.
+On main page, only 1 decimal place for radius.
 Resize circle while dragging marker.
 Some clean up.
 
@@ -87,3 +87,13 @@ First pass at removing the preferences/settings menu.
 Put resizing marker on circle when Point of Interest initially selected.
 Remove ability to make radius larger and put up draggable marker with short click.
 Some more clean up.
+
+### Version 1.0.18 (4/30/2019)
+
+Put radius info on resizing marker when dragging.
+
+### Version 1.0.19 (5/2/2019)
+
+Added enable/disable to the Alert Dialog box for individual items, so you user can
+enable/disable individual points of interest. When a location's geofence is disabled,
+the markers will be at 50% opaque, and the symbol on the recycler view will be paler.

@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity implements
                 DialogFragment newFragment = ListItemFragment.newInstance(
                         mAdapter.getItem(position).getRadius(),
                         mAdapter.getItem(position).getUpdateLocation(),
-                        mAdapter.getItem(position).getName());
+                        mAdapter.getItem(position).getName(),
+                        mAdapter.getItem(position).getEnabled());
                 newFragment.show(getSupportFragmentManager(), "locations");
             }
         });
@@ -197,9 +198,10 @@ public class MainActivity extends AppCompatActivity implements
             float rad = data.getFloat(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_RADIUS));
             int update = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_UPDATE));
             FetchPlaceRequest request = FetchPlaceRequest.builder(guid, placeFields).build();
+            boolean enabled = data.getInt(data.getColumnIndex(PlaceContract.PlaceEntry.COLUMN_ENABLED)) == 1;
             mPlacesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                 Place place = response.getPlace();
-                places.add(new LocationObj(place, rad, mId, update));
+                places.add(new LocationObj(place, rad, mId, update, enabled));
                 mAdapter.swapPlaces(places);
                 mRecyclerView.setAdapter(mAdapter);
                 mGeofencing.updateGeofencesList(places);
@@ -239,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements
                 mapDetailIntent.putExtra(Constants.PID + i, l.getPlace().getId());
                 mapDetailIntent.putExtra(Constants.LAT_LNG + i, l.getLatLng());
                 mapDetailIntent.putExtra(Constants.RAD + i, l.getRadius());
+                mapDetailIntent.putExtra(Constants.ENABLED + i, l.getEnabled());
             }
         }
 
@@ -301,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements
                     contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE,
                             Constants.GEOFENCE_NOTIFICATION_FREQUENCY_DEFAULT);
                     if (newPoi[i]) {
+                        contentValues.put(PlaceContract.PlaceEntry.COLUMN_ENABLED, 1); // assume true to start
                         getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, contentValues);
                     } else {
                         String sIdx = "";
@@ -308,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements
                             LocationObj lo = (LocationObj)oldList.get(j);
                             if (lo.getId().equals(placeIDs.get(i))) {
                                 sIdx = String.valueOf(lo.getTableIdx());
+                                contentValues.put(PlaceContract.PlaceEntry.COLUMN_ENABLED, lo.getEnabled()? 1:0);
                                 break;
                             }
                         }
@@ -370,11 +375,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDialogPositiveClick(float rad, Integer upd, Boolean checked) {
+    public void onDialogPositiveClick(float rad, Integer upd, Boolean disableChecked, Boolean deleteChecked) {
         LocationObj lo = mAdapter.getItem(mCurrentItemPosition);
-        if (checked) {
+        if (deleteChecked) {
             deleteLocation(lo.getTableIdx(), mAdapter.getItemCount() == 1);
         } else {
+            lo.setEnabled(!disableChecked);
             if (rad > 0 || upd > 0) {
                 restoreRinger();
                 ContentValues contentValues = new ContentValues();
@@ -383,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements
                 int newUpd = upd > 0 ? upd : lo.getUpdateLocation();
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_RADIUS, newRad);
                 contentValues.put(PlaceContract.PlaceEntry.COLUMN_UPDATE, newUpd);
+                contentValues.put(PlaceContract.PlaceEntry.COLUMN_ENABLED, lo.getEnabled()?1:0);
                 String sIdx = String.valueOf(lo.getTableIdx());
                 Uri uri = PlaceContract.BASE_CONTENT_URI.buildUpon()
                         .appendPath(PlaceContract.PATH_PLACES)

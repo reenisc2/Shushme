@@ -42,5 +42,6 @@ public class PlaceContract {
         public static final String COLUMN_RADIUS = "radius";
         public static final String COLUMN_UPDATE = "updaterate";
         public static final String COLUMN_EXPIRATION = "expiration";
+        public static final String COLUMN_ENABLED = "enabled";
     }
 }

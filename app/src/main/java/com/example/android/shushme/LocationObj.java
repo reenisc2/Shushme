@@ -13,6 +13,7 @@ public class LocationObj {
     private float mRadius;
     private int mTableIdx;
     private int mUpdateLocation;
+    private boolean mEnabled = true;
 
     public LocationObj() {
     }
@@ -34,6 +35,14 @@ public class LocationObj {
         mRadius = radius;
         mTableIdx = id;
         mUpdateLocation = update;
+    }
+
+    public LocationObj(Place place, float radius, int id, int update, boolean enabled) {
+        mPlace = place;
+        mRadius = radius;
+        mTableIdx = id;
+        mUpdateLocation = update;
+        mEnabled = enabled;
     }
 
     public String getId() {
@@ -79,4 +88,8 @@ public class LocationObj {
     public void setUpdateLocation(int update) { mUpdateLocation = update; }
 
     public int getUpdateLocation() { return mUpdateLocation; }
+
+    public void setEnabled(boolean enabled) { mEnabled = enabled; }
+
+    public boolean getEnabled() { return mEnabled; }
 }

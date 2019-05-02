@@ -60,6 +60,7 @@ public class LocationActivity extends AppCompatActivity
                 mCenters.add(new Centers(intent.getStringExtra(Constants.PID + idx),
                                          intent.getParcelableExtra(Constants.LAT_LNG + idx),
                                          intent.getFloatExtra(Constants.RAD + idx, 100)));
+                mCenters.get(idx).setEnabled(intent.getBooleanExtra(Constants.ENABLED + idx, true));
             }
         }
         ActionBar actionBar = getSupportActionBar();
@@ -91,8 +92,9 @@ public class LocationActivity extends AppCompatActivity
         if (mCenters != null && mCenters.size() > 0) {
             for (int i = 0; i < mCenters.size(); i++) {
                 mNewRad = mCenters.get(i).getRad();
+                float alpha = mCenters.get(i).getEnabled() ? 1.0f : 0.5f;
                 CircleOptions circleOptions = new CircleOptions().center(mCenters.get(i).getLatLng()).radius(mNewRad).strokeColor(0xffff0000).strokeWidth(4);
-                mMap.addMarker(new MarkerOptions().position(mCenters.get(i).getLatLng()));
+                mMap.addMarker(new MarkerOptions().position(mCenters.get(i).getLatLng()).alpha(alpha));
                 Circle c = mMap.addCircle(circleOptions);
                 mCenters.get(i).setCircle(c);
                 mNearestCenter = i;
@@ -123,6 +125,7 @@ public class LocationActivity extends AppCompatActivity
         mCenters.add(new Centers(poi.placeId, poi.latLng, mNewRad, c));
         mNearestCenter = mCenters.size() - 1;
         mCenters.get(mNearestCenter).setNewlyAdded();
+        mCenters.get(mNearestCenter).setEnabled(true);
         LatLng initialMarkerPos = Utils.calculateMarkerPos(mNewPos, mNewRad);
         placeMarker(initialMarkerPos);
         newLocationsAdded++;
@@ -159,7 +162,8 @@ public class LocationActivity extends AppCompatActivity
 
     private void placeMarker(LatLng latLng) {
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        float alpha = mCenters.get(mNearestCenter).getEnabled() ? 1.0f : 0.5f;
+        markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).alpha(alpha);
         markerOptions.title(String.format("Radius: %.1f", mNewRad));
         markerOptions.snippet("Drag marker to resize geofence circle.");
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));

@@ -12,6 +12,7 @@ public class Centers {
     private String mPid = null;
     private boolean hasChanged = false;
     private boolean newlyAdded = false;
+    private boolean mEnabled = true;
 
     public Centers () {
     }
@@ -85,4 +86,8 @@ public class Centers {
     public void setNewlyAdded() { newlyAdded = true; }
 
     public boolean isNewlyAdded() { return newlyAdded; }
+
+    public void setEnabled(boolean enabled) { mEnabled = enabled; }
+
+    public boolean getEnabled() { return mEnabled; }
 }
