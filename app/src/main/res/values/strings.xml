@@ -23,4 +23,6 @@
     <string name="delete_location">Delete location</string>
     <string name="save">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="formatted_radius">Radius: %.1f</string>
+    <string name="drag_instructions">Drag marker to resize geofence circle.</string>
 </resources>

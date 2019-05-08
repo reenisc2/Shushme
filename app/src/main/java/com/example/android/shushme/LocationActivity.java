@@ -135,7 +135,7 @@ public class LocationActivity extends AppCompatActivity
     public void onMarkerDrag(Marker marker) {
         mNewPos = marker.getPosition();
         mNewRad = Utils.calculateRadius(mNewPos, mCenters.get(mNearestCenter).getLatLng());
-        marker.setTitle(String.format("Radius: %.1f", mNewRad));
+        marker.setTitle(String.format(getString(R.string.formatted_radius), mNewRad));
         marker.showInfoWindow();
         updateRadiusAndCircle();
     }
@@ -164,8 +164,8 @@ public class LocationActivity extends AppCompatActivity
         MarkerOptions markerOptions = new MarkerOptions();
         float alpha = mCenters.get(mNearestCenter).getEnabled() ? 1.0f : 0.5f;
         markerOptions.position(latLng).draggable(true).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)).alpha(alpha);
-        markerOptions.title(String.format("Radius: %.1f", mNewRad));
-        markerOptions.snippet("Drag marker to resize geofence circle.");
+        markerOptions.title(String.format(getString(R.string.formatted_radius), mNewRad));
+        markerOptions.snippet(getString(R.string.drag_instructions));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         if (mCenters.get(mNearestCenter).hasMarker()) {
             mCenters.get(mNearestCenter).getMarker().remove();

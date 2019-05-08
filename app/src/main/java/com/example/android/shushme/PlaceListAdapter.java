@@ -20,15 +20,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.google.android.libraries.places.api.model.Place;
 
 import java.util.List;
 
@@ -82,14 +78,11 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
         holder.nameTextView.setText(placeName);
         holder.addressTextView.setText(placeAddress);
         holder.radiusTextView.setText(String.format("%.1f", mPlaces.get(position).getRadius()));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener((View v) -> {
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.ItemClicked(v, position);
                 }
                 return;
-            }
         });
     }
 

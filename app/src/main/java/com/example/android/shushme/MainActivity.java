@@ -96,9 +96,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, null);
 
-        mAdapter.setOnItemClickListener(new PlaceListAdapter.onItemClickListener() {
-            @Override
-            public void ItemClicked(View v, int position) {
+        mAdapter.setOnItemClickListener((View v, int position) -> {
                 mCurrentItemPosition = position;
                 DialogFragment newFragment = ListItemFragment.newInstance(
                         mAdapter.getItem(position).getRadius(),
@@ -106,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements
                         mAdapter.getItem(position).getName(),
                         mAdapter.getItem(position).getEnabled());
                 newFragment.show(getSupportFragmentManager(), "locations");
-            }
         });
         mRecyclerView.setAdapter(mAdapter);
         registerForContextMenu(mRecyclerView);
@@ -116,9 +113,7 @@ public class MainActivity extends AppCompatActivity implements
         Switch onOffSwitch = findViewById(R.id.enable_switch);
         mGeofencesEnabled = getPreferences(MODE_PRIVATE).getBoolean(getString(R.string.setting_enabled), false);
         onOffSwitch.setChecked(mGeofencesEnabled);
-        onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        onOffSwitch.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
                 SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
                 editor.putBoolean(getString(R.string.setting_enabled), isChecked);
                 mGeofencesEnabled = isChecked;
@@ -130,8 +125,6 @@ public class MainActivity extends AppCompatActivity implements
                     mGeofencing.unRegisterAllGeofences();
                     restoreRinger();
                 }
-            }
-
         });
 
         // Build up the LocationServices API client
@@ -369,10 +362,12 @@ public class MainActivity extends AppCompatActivity implements
                 PERMISSIONS_REQUEST_FINE_LOCATION);
     }
 
+/*
     public void showListItemDialog() {
         DialogFragment dialog = new ListItemFragment();
         dialog.show(getSupportFragmentManager(), "ListItemFragment");
     }
+*/
 
     @Override
     public void onDialogPositiveClick(float rad, Integer upd, Boolean disableChecked, Boolean deleteChecked) {

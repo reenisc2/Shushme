@@ -4,6 +4,11 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+/**
+ * Class to encapsulate the points that are selected as the centers of geofences
+ * for the location activity
+ */
+
 public class Centers {
     private LatLng mLatLng = null;
     private float mRad = 0;

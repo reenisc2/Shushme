@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import static com.example.android.shushme.provider.PlaceContract.PlaceEntry;
 
@@ -40,7 +39,6 @@ public class PlaceContentProvider extends ContentProvider {
 
     // Declare a static variable for the Uri matcher that you construct
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private static final String TAG = PlaceContentProvider.class.getName();
 
     // Define a static buildUriMatcher method that associates URI's with their int match
     public static UriMatcher buildUriMatcher() {
