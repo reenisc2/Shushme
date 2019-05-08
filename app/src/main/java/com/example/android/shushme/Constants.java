@@ -2,8 +2,6 @@ package com.example.android.shushme;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.HashMap;
-
 public final class Constants {
 
     private Constants() {

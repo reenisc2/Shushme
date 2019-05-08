@@ -1,7 +1,6 @@
 package com.example.android.shushme;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -52,7 +51,6 @@ public class Utils {
         double outerLat = Math.asin(Math.sin(centerLat) * Math.cos(distance) + a * Math.cos(bearing));
         double outerLng = centerLng + Math.atan2(Math.sin(bearing) * a, Math.cos(bearing) - Math.sin(centerLat) * Math.sin(outerLat));
 
-        LatLng result = new LatLng(Math.toDegrees(outerLat), Math.toDegrees(outerLng));
         return new LatLng(Math.toDegrees(outerLat), Math.toDegrees(outerLng));
     }
 

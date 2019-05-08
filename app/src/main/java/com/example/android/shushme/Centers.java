@@ -19,9 +19,6 @@ public class Centers {
     private boolean newlyAdded = false;
     private boolean mEnabled = true;
 
-    public Centers () {
-    }
-
     public Centers (String pId, LatLng latLng) {
         mPid = pId;
         mLatLng = latLng;

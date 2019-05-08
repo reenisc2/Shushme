@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import static com.example.android.shushme.provider.PlaceContract.PlaceEntry;
 
@@ -36,6 +37,7 @@ public class PlaceContentProvider extends ContentProvider {
     // and related ints (101, 102, ..) for items in that directory.
     public static final int PLACES = 100;
     public static final int PLACE_WITH_ID = 101;
+    private static final String TAG = PlaceContentProvider.class.getSimpleName();
 
     // Declare a static variable for the Uri matcher that you construct
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -89,8 +91,12 @@ public class PlaceContentProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        // Notify the resolver if the uri has been changed, and return the newly inserted URI
-        getContext().getContentResolver().notifyChange(uri, null);
+        try {
+            // Notify the resolver if the uri has been changed, and return the newly inserted URI
+            getContext().getContentResolver().notifyChange(uri, null);
+        } catch (NullPointerException e){
+            Log.e(TAG, "Null Pointer exception");
+        }
 
         // Return constructed uri (this points to the newly inserted row of data)
         return returnUri;
@@ -99,12 +105,12 @@ public class PlaceContentProvider extends ContentProvider {
     /***
      * Handles requests for data by URI
      *
-     * @param uri
-     * @param projection
-     * @param selection
-     * @param selectionArgs
-     * @param sortOrder
-     * @return
+     * @param uri - URI for query
+     * @param projection - Column projection (can be null)
+     * @param selection - Where clause
+     * @param selectionArgs - Where args
+     * @param sortOrder - orderby (ascending or descenting
+     * @return Cursor containing query results
      */
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
@@ -143,9 +149,9 @@ public class PlaceContentProvider extends ContentProvider {
     /***
      * Deletes a single row of data
      *
-     * @param uri
-     * @param selection
-     * @param selectionArgs
+     * @param uri - The URI of the database query
+     * @param selection - Where clause
+     * @param selectionArgs - Where args
      * @return number of rows affected
      */
     @Override
@@ -178,9 +184,9 @@ public class PlaceContentProvider extends ContentProvider {
     /***
      * Updates a single row of data
      *
-     * @param uri
-     * @param selection
-     * @param selectionArgs
+     * @param uri - URI
+     * @param selection - Where clause
+     * @param selectionArgs - Where args
      * @return number of rows affected
      */
     @Override

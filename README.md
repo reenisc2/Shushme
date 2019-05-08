@@ -97,3 +97,8 @@ Put radius info on resizing marker when dragging.
 Added enable/disable to the Alert Dialog box for individual items, so you user can
 enable/disable individual points of interest. When a location's geofence is disabled,
 the markers will be at 50% opaque, and the symbol on the recycler view will be paler.
+
+### Version 1.0.20 (5/8/2019)
+
+"Powered by Google" won't overwrite the bottom of the list of list of places.
+Some clean up and refactoring.
